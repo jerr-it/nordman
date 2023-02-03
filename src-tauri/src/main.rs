@@ -19,9 +19,10 @@ fn nordvpn_login() -> Result<String, String> {
         .to_string()
         .split("browser: ")
         .last()
-        .unwrap();
+        .unwrap()
+        .to_string();
 
-    Ok(res.to_string())
+    Ok(res)
 }
 
 /// Returns true if the user is logged in to NordVPN
