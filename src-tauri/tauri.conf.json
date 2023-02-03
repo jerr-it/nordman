@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "nvpng",
+    "productName": "nordman",
     "version": "0.0.0"
   },
   "tauri": {
@@ -62,7 +62,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "nvpng",
+        "title": "nordman",
         "width": 800
       }
     ]
