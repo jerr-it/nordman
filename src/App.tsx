@@ -1,13 +1,18 @@
 import { ThemeProvider, createTheme } from "@mui/material";
 import CssBaseline from '@mui/material/CssBaseline';
 import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/login";
 
 export const ColorModeContext = React.createContext({toggleColorMode: () => {}});
 
 function App() {
   return (
-    <LoginPage />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

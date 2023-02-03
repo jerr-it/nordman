@@ -15,12 +15,13 @@ fn nordvpn_login() -> Result<String, String> {
         .output()
         .map_err(|e| e.to_string())?;
 
-    Ok(String::from_utf8_lossy(&output.stdout)
+    let res = String::from_utf8_lossy(&output.stdout)
         .to_string()
         .split("browser: ")
         .last()
-        .unwrap()
-        .to_string())
+        .unwrap();
+
+    Ok(res.to_string())
 }
 
 /// Returns true if the user is logged in to NordVPN

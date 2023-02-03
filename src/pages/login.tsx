@@ -14,7 +14,6 @@ function LoginPage() {
     const colorMode = useContext(ColorModeContext);
 
     const [waiting, setWaiting] = useState(false);
-    const [loggedIn, setLoggedIn] = useState(false);
 
     async function StartLogin() {
         try {
@@ -35,7 +34,6 @@ function LoginPage() {
                 const status: boolean = await invoke("nordvpn_is_logged_in", {});
                 if (status) {
                     console.log("Logged in!")
-                    setLoggedIn(true);
                     setWaiting(false);
                     clearInterval(repeat);
                 } else {
