@@ -39,6 +39,25 @@ fn nordvpn_is_logged_in() -> Result<bool, String> {
 }
 
 #[tauri::command]
+fn nordvpn_countries() -> Result<Vec<String>, String> {
+    let output = Command::new("nordvpn")
+        .arg("countries")
+        .output()
+        .map_err(|e| e.to_string())?;
+
+    let res = String::from_utf8_lossy(&output.stdout);
+    let res = res
+        .split("\n")
+        .nth(1)
+        .unwrap()
+        .split(",")
+        .map(|name| name.replace("-", " ").trim().replace("_", " ").to_string())
+        .collect::<Vec<String>>();
+
+    Ok(res)
+}
+
+#[tauri::command]
 fn nordvpn_logout() -> Result<bool, String> {
     let output = Command::new("nordvpn")
         .arg("logout")
@@ -54,7 +73,8 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             nordvpn_login,
-            nordvpn_is_logged_in
+            nordvpn_is_logged_in,
+            nordvpn_countries
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
