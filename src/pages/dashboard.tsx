@@ -1,4 +1,4 @@
-import NAppBar from "../components/appBar";
+import NAppBar from "../components/nAppBar";
 
 function Dashboard() {
     return (
