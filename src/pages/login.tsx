@@ -1,19 +1,14 @@
-import { Button, Card, CircularProgress, Grid, IconButton, Typography, useTheme } from "@mui/material";
+import { Button, Card, CircularProgress, Grid, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import LoginIcon from '@mui/icons-material/Login';
 import { invoke } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/shell";
-import { useContext, useEffect, useState } from "react";
-import { ColorModeContext } from "../App";
+import { useEffect, useState } from "react";
 
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
 import { useNavigate } from 'react-router-dom';
+import ThemeSwitchButton from "../components/themeSwitchButton";
 
 function LoginPage() {
-    const theme = useTheme();
-    const colorMode = useContext(ColorModeContext);
-
     const [waiting, setWaiting] = useState(true);
 
     const navigate = useNavigate();
@@ -104,9 +99,7 @@ function LoginPage() {
                     }
                 </Stack>
             </Card>
-            <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
-                {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-            </IconButton>
+            <ThemeSwitchButton/>
         </Grid>
     );
 }

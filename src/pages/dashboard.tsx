@@ -1,11 +1,8 @@
-import { Card } from "@mui/material";
-
+import NAppBar from "../components/appBar";
 
 function Dashboard() {
     return (
-        <Card>
-            <h1>Dashboard</h1>
-        </Card>
+        <NAppBar/>
     );
 }
 
