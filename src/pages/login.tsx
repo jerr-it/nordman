@@ -8,12 +8,15 @@ import { ColorModeContext } from "../App";
 
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
+import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
     const theme = useTheme();
     const colorMode = useContext(ColorModeContext);
 
-    const [waiting, setWaiting] = useState(false);
+    const [waiting, setWaiting] = useState(true);
+
+    const navigate = useNavigate();
 
     async function StartLogin() {
         try {
@@ -25,26 +28,45 @@ function LoginPage() {
         }
     }
 
+    async function check_login(): Promise<boolean> {
+        console.log("check");
+        try {
+            return await invoke("nordvpn_is_logged_in", {});
+        } catch (e) {
+            console.error(e);
+        }
+
+        return false;
+    }
+
+    // Initial check
+    useEffect(() => {
+        check_login().then((status) => {
+            if(status) {
+                navigate("/dashboard");
+            } else {
+                setWaiting(false);
+            }
+        });
+    }, []);
+
+    // Check every 3 seconds after pressing login
     let failCounter = 0;
     useEffect(() => {
         const repeat = setInterval(async () => {
-            if (!waiting) return;
+            if(!waiting) return;
 
-            try {
-                const status: boolean = await invoke("nordvpn_is_logged_in", {});
-                if (status) {
-                    console.log("Logged in!")
+            const status = await check_login();
+            if (status) {
+                console.log("Logged in!");
+                clearInterval(repeat);
+                navigate("/dashboard");
+            } else {
+                failCounter++;
+                if (failCounter >= 5) {
                     setWaiting(false);
                     clearInterval(repeat);
-                } else {
-                    failCounter++;
-                    if (failCounter >= 5) {
-                        setWaiting(false);
-                        clearInterval(repeat);
-                    }
                 }
-            } catch (e) {
-                console.error(e);
             }
         }, 3000);
 
