@@ -1,4 +1,4 @@
-import { Card, Collapse, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
+import { Card, Collapse, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, TextField, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import NAppBar from "../components/nAppBar";
 import LanguageIcon from '@mui/icons-material/Language';
@@ -96,26 +96,26 @@ function Dashboard() {
         <Box>
             <NAppBar />
             <Stack direction="row" sx={{ p: 1, m: 1, maxHeight: "85vh" }} spacing={1}>
-                <Card
-                    sx={{ width: 300, p: 1, maxHeight: "100%", overflow: "auto" }}
-                >
-                    <List
-                        component="nav"
-                        aria-labelledby="nested-list-subheader"
-                        subheader={
-                            <Typography variant="h6" component="div" id="nested-list-subheader">
-                                Servers
-                            </Typography>
-                        }
+                <Stack direction="column">
+                    <Card sx={{ mb: 1, p: 1, minHeight: 70 }} >
+                        <TextField fullWidth variant="standard" label="Filter" />
+                    </Card>
+                    <Card
+                        sx={{ width: 300, p: 1, maxHeight: "100%", overflow: "auto", flexGrow: 1 }}
                     >
-                        {CountryList(countries)}
-                    </List>
-                </Card>
+                        <List
+                            component="nav"
+                            aria-labelledby="nested-list-subheader"
+                        >
+                            {CountryList(countries)}
+                        </List>
+                    </Card>
+                </Stack>
                 <Card sx={{ flexGrow: 1, p: 1 }}>
                     <Typography>Map</Typography>
                 </Card>
-            </Stack>
-        </Box>
+            </Stack >
+        </Box >
     );
 }
 
