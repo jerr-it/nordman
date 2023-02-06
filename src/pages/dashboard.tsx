@@ -1,11 +1,12 @@
 import { Card, Collapse, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, TextField, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import NAppBar from "../components/nAppBar";
-import LanguageIcon from '@mui/icons-material/Language';
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import LoginIcon from '@mui/icons-material/Login';
+import "/node_modules/flag-icons/css/flag-icons.min.css";
+import { country_converter } from "../assets/country_converter";
 
 function Dashboard() {
     const [countries, setCountries] = useState<{ names: string[]; cities: string[][]; drawer_open: boolean[] }>({ names: [], cities: [], drawer_open: [] });
@@ -61,9 +62,7 @@ function Dashboard() {
                 <Box>
                     <Divider sx={{ opacity: countries.drawer_open[i] ? 1 : 0 }} />
                     <ListItem>
-                        <ListItemIcon>
-                            <LanguageIcon />
-                        </ListItemIcon>
+                        <Box sx={{ mr: 1 }}><span className={"fi fi-" + country_converter(countries.names[i])}></span></Box>
                         <ListItemText>
                             {countries.names[i].replaceAll("_", " ")}
                         </ListItemText>
