@@ -9,6 +9,7 @@ import LoginIcon from '@mui/icons-material/Login';
 
 function Dashboard() {
     const [countries, setCountries] = useState<{ names: string[]; cities: string[][]; drawer_open: boolean[] }>({ names: [], cities: [], drawer_open: [] });
+    const [search, setSearch] = useState("");
 
     /// Updates the state of the drawer for the country at index
     /// In accordance with https://beta.reactjs.org/learn/updating-arrays-in-state
@@ -48,8 +49,14 @@ function Dashboard() {
     function CountryList(countries: { names: string[]; cities: string[][]; drawer_open: boolean[] }): Array<JSX.Element> {
         let list = [];
 
+        const searchTerm = search.toLowerCase();
+
         // TODO: add country flags
         for (let i = 0; i < countries.names.length; i++) {
+            if (!countries.names[i].toLowerCase().includes(searchTerm) &&
+                !countries.cities[i].some((city) => city.toLowerCase().includes(searchTerm))
+            ) continue;
+
             list.push(
                 <Box>
                     <Divider sx={{ opacity: countries.drawer_open[i] ? 1 : 0 }} />
@@ -95,10 +102,10 @@ function Dashboard() {
     return (
         <Box>
             <NAppBar />
-            <Stack direction="row" sx={{ p: 1, m: 1, maxHeight: "85vh" }} spacing={1}>
+            <Stack direction="row" sx={{ p: 1, m: 1, minHeight: "85vh", maxHeight: "85vh" }} spacing={1}>
                 <Stack direction="column">
                     <Card sx={{ mb: 1, p: 1, minHeight: 70 }} >
-                        <TextField fullWidth variant="standard" label="Filter" />
+                        <TextField fullWidth variant="standard" label="Filter" onChange={(event) => setSearch(event.target.value)} />
                     </Card>
                     <Card
                         sx={{ width: 300, p: 1, maxHeight: "100%", overflow: "auto", flexGrow: 1 }}
