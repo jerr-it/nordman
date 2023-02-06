@@ -51,6 +51,26 @@ fn nordvpn_countries() -> Result<Vec<String>, String> {
         .nth(1)
         .unwrap()
         .split(",")
+        .map(|name| name.replace("-", " ").trim().to_string())
+        .collect::<Vec<String>>();
+
+    Ok(res)
+}
+
+#[tauri::command]
+fn nordvpn_cities(country: String) -> Result<Vec<String>, String> {
+    let output = Command::new("nordvpn")
+        .arg("cities")
+        .arg(country)
+        .output()
+        .map_err(|e| e.to_string())?;
+
+    let res = String::from_utf8_lossy(&output.stdout);
+    let res = res
+        .split("\n")
+        .nth(1)
+        .unwrap()
+        .split(",")
         .map(|name| name.replace("-", " ").trim().replace("_", " ").to_string())
         .collect::<Vec<String>>();
 
@@ -74,7 +94,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             nordvpn_login,
             nordvpn_is_logged_in,
-            nordvpn_countries
+            nordvpn_countries,
+            nordvpn_cities
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
