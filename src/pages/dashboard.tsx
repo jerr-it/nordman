@@ -1,10 +1,11 @@
-import { Card, Collapse, Divider, List, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
+import { Card, Collapse, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import NAppBar from "../components/nAppBar";
 import LanguageIcon from '@mui/icons-material/Language';
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import LoginIcon from '@mui/icons-material/Login';
 
 function Dashboard() {
     const [countries, setCountries] = useState<{ names: string[]; cities: string[][]; drawer_open: boolean[] }>({ names: [], cities: [], drawer_open: [] });
@@ -28,11 +29,14 @@ function Dashboard() {
 
         for (let city of cities) {
             list.push(
-                <ListItemButton sx={{ pl: 4 }}>
+                <ListItem sx={{ pl: 4 }}>
                     <ListItemText>
                         {city}
                     </ListItemText>
-                </ListItemButton>
+                    <IconButton>
+                        <LoginIcon />
+                    </IconButton>
+                </ListItem>
             );
         }
 
@@ -49,15 +53,20 @@ function Dashboard() {
             list.push(
                 <Box>
                     <Divider sx={{ opacity: countries.drawer_open[i] ? 1 : 0 }} />
-                    <ListItemButton onClick={() => FlipDrawer(i)}>
+                    <ListItem>
                         <ListItemIcon>
                             <LanguageIcon />
                         </ListItemIcon>
                         <ListItemText>
                             {countries.names[i].replaceAll("_", " ")}
                         </ListItemText>
-                        {countries.drawer_open[i] ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
+                        <IconButton>
+                            <LoginIcon />
+                        </IconButton>
+                        <IconButton onClick={() => { FlipDrawer(i) }}>
+                            {countries.drawer_open[i] ? <ExpandLess /> : <ExpandMore />}
+                        </IconButton>
+                    </ListItem>
                     <Collapse in={countries.drawer_open[i]} timeout="auto" unmountOnExit>
                         {CityList(countries.cities[i])}
                     </Collapse>

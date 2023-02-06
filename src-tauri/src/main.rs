@@ -115,6 +115,7 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             nordvpn_login,
+            nordvpn_logout,
             nordvpn_is_logged_in,
             nordvpn_countries,
             nordvpn_cities,
