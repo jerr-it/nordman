@@ -78,6 +78,28 @@ fn nordvpn_cities(country: String) -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
+fn nordvpn_connect(country: String, city: Option<String>) -> Result<bool, String> {
+    let output = match city {
+        Some(city) => Command::new("nordvpn")
+            .arg("connect")
+            .arg(country)
+            .arg(city)
+            .output()
+            .map_err(|e| e.to_string())?,
+
+        None => Command::new("nordvpn")
+            .arg("connect")
+            .arg(country)
+            .output()
+            .map_err(|e| e.to_string())?,
+    };
+
+    Ok(String::from_utf8_lossy(&output.stdout)
+        .to_string()
+        .contains("You are connected to"))
+}
+
+#[tauri::command]
 fn nordvpn_logout() -> Result<bool, String> {
     let output = Command::new("nordvpn")
         .arg("logout")
@@ -95,7 +117,8 @@ fn main() {
             nordvpn_login,
             nordvpn_is_logged_in,
             nordvpn_countries,
-            nordvpn_cities
+            nordvpn_cities,
+            nordvpn_connect
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
