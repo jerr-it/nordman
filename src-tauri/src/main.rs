@@ -44,9 +44,10 @@ fn nordvpn_login() -> Result<String, String> {
 fn nordvpn_is_logged_in() -> Result<bool, String> {
     let output = cmd!("nordvpn", "account",)?;
 
-    Ok(!String::from_utf8_lossy(&output.stdout)
-        .to_string()
-        .contains("You are not logged in."))
+    match model::Account::parse(output) {
+        Ok(_) => Ok(true),
+        Err(_) => Ok(false),
+    }
 }
 
 #[tauri::command]
