@@ -62,16 +62,9 @@ fn nordvpn_countries() -> Result<Vec<String>, String> {
 fn nordvpn_cities(country: String) -> Result<Vec<String>, String> {
     let output = cmd!("nordvpn", "cities", country,)?;
 
-    let res = String::from_utf8_lossy(&output.stdout);
-    let res = res
-        .split("\n")
-        .nth(1)
-        .unwrap()
-        .split(",")
-        .map(|name| name.replace("-", " ").trim().replace("_", " ").to_string())
-        .collect::<Vec<String>>();
+    let cities = model::CitiesList::parse(output);
 
-    Ok(res)
+    Ok(cities.list)
 }
 
 #[tauri::command]
