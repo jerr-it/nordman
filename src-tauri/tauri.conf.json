@@ -61,7 +61,7 @@
       {
         "fullscreen": false,
         "height": 600,
-        "resizable": true,
+        "resizable": false,
         "title": "nordman",
         "width": 800
       }

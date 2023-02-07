@@ -1,4 +1,4 @@
-import { Card, Collapse, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, TextField, Typography } from "@mui/material";
+import { Card, Collapse, Divider, IconButton, List, ListItem, ListItemText, TextField, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import NAppBar from "../components/nAppBar";
 import { useEffect, useState } from "react";
@@ -7,6 +7,7 @@ import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import LoginIcon from '@mui/icons-material/Login';
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 import { country_converter } from "../assets/country_converter";
+import StatusCard from "../components/statusCard";
 
 function Dashboard() {
     const [countries, setCountries] = useState<{ names: string[]; cities: string[][]; drawer_open: boolean[] }>({ names: [], cities: [], drawer_open: [] });
@@ -52,7 +53,6 @@ function Dashboard() {
 
         const searchTerm = search.toLowerCase();
 
-        // TODO: add country flags
         for (let i = 0; i < countries.names.length; i++) {
             if (!countries.names[i].toLowerCase().includes(searchTerm) &&
                 !countries.cities[i].some((city) => city.toLowerCase().includes(searchTerm))
@@ -121,6 +121,7 @@ function Dashboard() {
                     <Typography>Map</Typography>
                 </Card>
             </Stack >
+            <StatusCard />
         </Box >
     );
 }
