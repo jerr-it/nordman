@@ -4,6 +4,7 @@
 )]
 
 mod connection;
+mod model;
 use std::process::Command;
 use std::sync::Mutex;
 
@@ -52,16 +53,9 @@ fn nordvpn_is_logged_in() -> Result<bool, String> {
 fn nordvpn_countries() -> Result<Vec<String>, String> {
     let output = cmd!("nordvpn", "countries",)?;
 
-    let res = String::from_utf8_lossy(&output.stdout);
-    let res = res
-        .split("\n")
-        .nth(1)
-        .unwrap()
-        .split(",")
-        .map(|name| name.replace("-", " ").trim().to_string())
-        .collect::<Vec<String>>();
+    let countries = model::CountryList::parse(output);
 
-    Ok(res)
+    Ok(countries.list)
 }
 
 #[tauri::command]
