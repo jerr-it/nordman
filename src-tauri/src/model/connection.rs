@@ -64,7 +64,8 @@ macro_rules! table_struct {
                 table
             }
 
-            pub fn from_terminal_output(output: String) -> Result<Self, String> {
+            pub fn parse(output: std::process::Output) -> Result<Self, String> {
+                let output = String::from_utf8_lossy(&output.stdout).to_string();
                 let table = Self::parse_input_string(&output);
                 if table.get("Status").unwrap() == "Disconnected" {
                     return Err("Not connected".to_string());
