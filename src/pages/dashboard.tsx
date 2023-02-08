@@ -27,7 +27,7 @@ function Dashboard() {
         setCountries({ names: countries.names, cities: countries.cities, drawer_open: new_drawer_open });
     }
 
-    async function Connect(data: { country: string; city: string | null }) {
+    function Connect(data: { country: string; city: string | null }) {
         invoke("nordvpn_connect", data)
             .then((res) => {
                 invoke("nordvpn_connection_status").then((res) => {
@@ -37,6 +37,16 @@ function Dashboard() {
                     // TODO display error to user
                     console.error(err);
                 });
+            }).catch((err) => {
+                // TODO display error to user
+                console.error(err);
+            });
+    }
+
+    function Disconnect() {
+        invoke("nordvpn_disconnect")
+            .then((res) => {
+                setConnectionStatus(null);
             }).catch((err) => {
                 // TODO display error to user
                 console.error(err);
@@ -134,7 +144,7 @@ function Dashboard() {
                     <Typography>Map</Typography>
                 </Card>
             </Stack >
-            <StatusCard connection={connectionStatus} />
+            <StatusCard connection={connectionStatus} onDisconnect={Disconnect} />
         </Box >
     );
 }

@@ -24,7 +24,7 @@ macro_rules! cmd {
 
 /// Returns the browser link for logging in to NordVPN
 #[tauri::command]
-fn nordvpn_login() -> Result<String, String> {
+async fn nordvpn_login() -> Result<String, String> {
     let output = cmd!("nordvpn", "login",)?;
 
     let res = String::from_utf8_lossy(&output.stdout)
@@ -39,7 +39,7 @@ fn nordvpn_login() -> Result<String, String> {
 
 /// Returns true if the user is logged in to NordVPN
 #[tauri::command]
-fn nordvpn_is_logged_in() -> Result<bool, String> {
+async fn nordvpn_is_logged_in() -> Result<bool, String> {
     let output = cmd!("nordvpn", "account",)?;
 
     match model::Account::parse(output) {
@@ -49,7 +49,7 @@ fn nordvpn_is_logged_in() -> Result<bool, String> {
 }
 
 #[tauri::command]
-fn nordvpn_countries() -> Result<Vec<String>, String> {
+async fn nordvpn_countries() -> Result<Vec<String>, String> {
     let output = cmd!("nordvpn", "countries",)?;
 
     let countries = model::CountryList::parse(output);
@@ -58,7 +58,7 @@ fn nordvpn_countries() -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
-fn nordvpn_cities(country: String) -> Result<Vec<String>, String> {
+async fn nordvpn_cities(country: String) -> Result<Vec<String>, String> {
     let output = cmd!("nordvpn", "cities", country,)?;
 
     let cities = model::CitiesList::parse(output);
@@ -67,7 +67,7 @@ fn nordvpn_cities(country: String) -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
-fn nordvpn_connect(country: String, city: Option<String>) -> Result<bool, String> {
+async fn nordvpn_connect(country: String, city: Option<String>) -> Result<bool, String> {
     let output = match city {
         Some(city) => cmd!("nordvpn", "connect", country, city,)?,
         None => cmd!("nordvpn", "connect", country,)?,
@@ -79,8 +79,23 @@ fn nordvpn_connect(country: String, city: Option<String>) -> Result<bool, String
 }
 
 #[tauri::command]
-fn nordvpn_connection_status(
-    state: tauri::State<Mutex<Option<ConnectionDetails>>>,
+async fn nordvpn_disconnect(
+    state: tauri::State<'_, Mutex<Option<ConnectionDetails>>>,
+) -> Result<bool, String> {
+    let output = cmd!("nordvpn", "disconnect",)?;
+
+    let output_str = String::from_utf8(output.stdout).map_err(|e| e.to_string())?;
+
+    let mut conn = state.lock().unwrap();
+
+    *conn = None;
+
+    Ok(output_str.contains("You are disconnected"))
+}
+
+#[tauri::command]
+async fn nordvpn_connection_status(
+    state: tauri::State<'_, Mutex<Option<ConnectionDetails>>>,
 ) -> Result<Option<ConnectionDetails>, String> {
     let output = cmd!("nordvpn", "status",)?;
 
@@ -94,7 +109,7 @@ fn nordvpn_connection_status(
 }
 
 #[tauri::command]
-fn nordvpn_logout() -> Result<bool, String> {
+async fn nordvpn_logout() -> Result<bool, String> {
     let output = cmd!("nordvpn", "logout",)?;
 
     Ok(String::from_utf8_lossy(&output.stdout)
@@ -112,6 +127,7 @@ fn main() {
             nordvpn_countries,
             nordvpn_cities,
             nordvpn_connect,
+            nordvpn_disconnect,
             nordvpn_connection_status,
         ])
         .run(tauri::generate_context!())

@@ -4,7 +4,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { useState } from "react";
 import { ConnectionDetails } from "../assets/connection_state";
 
-function StatusCard({ connection }: { connection: ConnectionDetails | null }) {
+function StatusCard({ connection, onDisconnect }: { connection: ConnectionDetails | null, onDisconnect: () => void }) {
     const [collapsed, setCollapsed] = useState(false);
 
     return (
@@ -42,7 +42,7 @@ function StatusCard({ connection }: { connection: ConnectionDetails | null }) {
                 <IconButton
                     color="inherit"
                     sx={{ position: "absolute", top: 0, right: 0 }}
-                    onClick={(e) => { e.stopPropagation() }}
+                    onClick={(e) => { e.stopPropagation(); onDisconnect(); }}
                     onMouseDown={(e) => { e.stopPropagation() }}
                 >
                     <CancelIcon />
