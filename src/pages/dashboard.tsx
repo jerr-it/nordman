@@ -28,7 +28,8 @@ function Dashboard() {
     }
 
     function Connect(data: { country: string; city: string | null }) {
-        invoke("nordvpn_connect", data)
+        const fixed_data = { country: data.country.replaceAll(" ", "_"), city: data.city?.replaceAll(" ", "_") };
+        invoke("nordvpn_connect", fixed_data)
             .then((res) => {
                 invoke("nordvpn_connection_status").then((res) => {
                     const status = res as ConnectionDetails;
