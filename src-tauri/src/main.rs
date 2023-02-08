@@ -7,7 +7,7 @@ mod model;
 use std::process::Command;
 use std::sync::Mutex;
 
-use model::{ConnectionDetails, ConnectionState};
+use model::ConnectionDetails;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
@@ -80,17 +80,17 @@ fn nordvpn_connect(country: String, city: Option<String>) -> Result<bool, String
 
 #[tauri::command]
 fn nordvpn_connection_status(
-    state: tauri::State<Mutex<ConnectionState>>,
-) -> Result<ConnectionState, String> {
+    state: tauri::State<Mutex<Option<ConnectionDetails>>>,
+) -> Result<Option<ConnectionDetails>, String> {
     let output = cmd!("nordvpn", "status",)?;
 
-    let new_state = ConnectionState::parse(output)?;
+    let new_state = ConnectionDetails::parse(output)?;
 
     let mut conn = state.lock().unwrap();
 
-    *conn = new_state.clone();
+    *conn = Some(new_state.clone());
 
-    Ok(new_state)
+    Ok(Some(new_state))
 }
 
 #[tauri::command]
@@ -104,7 +104,7 @@ fn nordvpn_logout() -> Result<bool, String> {
 
 fn main() {
     tauri::Builder::default()
-        .manage(Mutex::new(ConnectionState::new()))
+        .manage(Mutex::new(None::<ConnectionDetails>))
         .invoke_handler(tauri::generate_handler![
             nordvpn_login,
             nordvpn_logout,

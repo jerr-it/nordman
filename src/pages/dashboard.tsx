@@ -8,12 +8,12 @@ import "/node_modules/flag-icons/css/flag-icons.min.css";
 import { country_converter } from "../assets/country_converter";
 import StatusCard from "../components/statusCard";
 import LocationCityIcon from '@mui/icons-material/LocationCity';
-import { ConnectionState } from "../assets/connection_state";
+import { ConnectionDetails } from "../assets/connection_state";
 
 function Dashboard() {
     const [countries, setCountries] = useState<{ names: string[]; cities: string[][]; drawer_open: boolean[] }>({ names: [], cities: [], drawer_open: [] });
     const [search, setSearch] = useState("");
-    const [connectionStatus, setConnectionStatus] = useState<ConnectionState>();
+    const [connectionStatus, setConnectionStatus] = useState<ConnectionDetails | null>(null);
 
     /// Updates the state of the drawer for the country at index
     /// In accordance with https://beta.reactjs.org/learn/updating-arrays-in-state
@@ -31,7 +31,7 @@ function Dashboard() {
         invoke("nordvpn_connect", data)
             .then((res) => {
                 invoke("nordvpn_connection_status").then((res) => {
-                    const status = res as ConnectionState;
+                    const status = res as ConnectionDetails;
                     setConnectionStatus(status);
                 }).catch((err) => {
                     // TODO display error to user
@@ -134,7 +134,7 @@ function Dashboard() {
                     <Typography>Map</Typography>
                 </Card>
             </Stack >
-            <StatusCard />
+            <StatusCard connection={connectionStatus} />
         </Box >
     );
 }

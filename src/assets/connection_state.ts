@@ -1,12 +1,3 @@
-export class ConnectionState {
-    connected: boolean;
-    details: ConnectionDetails;
-
-    constructor(obj: any) {
-        this.connected = obj.connected;
-        this.details = new ConnectionDetails(obj.details);
-    }
-}
 
 export class ConnectionDetails {
     hostname: string;

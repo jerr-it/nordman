@@ -9,4 +9,3 @@ pub use account::Account;
 
 mod connection;
 pub use connection::ConnectionDetails;
-pub use connection::ConnectionState;

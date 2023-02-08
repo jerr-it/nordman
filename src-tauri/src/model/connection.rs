@@ -2,12 +2,6 @@ use std::collections::HashMap;
 
 use serde::Serialize;
 
-#[derive(Serialize, Clone)]
-pub struct ConnectionState {
-    connected: bool,
-    conn_details: Option<ConnectionDetails>,
-}
-
 fn parse_input_to_table(input: String) -> HashMap<String, String> {
     let mut table = HashMap::new();
 
@@ -30,35 +24,6 @@ fn parse_input_to_table(input: String) -> HashMap<String, String> {
     table
 }
 
-impl ConnectionState {
-    pub fn new() -> Self {
-        Self {
-            connected: false,
-            conn_details: None,
-        }
-    }
-
-    pub fn parse(output: std::process::Output) -> Result<Self, String> {
-        let output = String::from_utf8(output.stdout).map_err(|e| e.to_string())?;
-
-        let table = parse_input_to_table(output);
-        println!("{:?}", table);
-
-        let connected = table.get("Status").ok_or("Status not found")? == "Connected";
-
-        let conn_details = if connected {
-            Some(ConnectionDetails::from_table(table)?)
-        } else {
-            None
-        };
-
-        Ok(Self {
-            connected,
-            conn_details,
-        })
-    }
-}
-
 #[derive(Serialize, Clone)]
 pub struct ConnectionDetails {
     hostname: String,
@@ -72,7 +37,9 @@ pub struct ConnectionDetails {
 }
 
 impl ConnectionDetails {
-    pub fn from_table(table: HashMap<String, String>) -> Result<Self, String> {
+    pub fn parse(output: std::process::Output) -> Result<Self, String> {
+        let table = parse_input_to_table(String::from_utf8_lossy(&output.stdout).to_string());
+
         let hostname = table.get("Hostname").ok_or("No hostname")?.to_string();
 
         let ip = table.get("IP").ok_or("No IP")?.to_string();
