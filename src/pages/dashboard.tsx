@@ -50,7 +50,7 @@ function Dashboard() {
 
         for (let city of cities) {
             list.push(
-                <ListItemButton sx={{ pl: 4 }} onClick={() => { Connect({ country: country, city: city }) }}>
+                <ListItemButton key={country + city} sx={{ pl: 4 }} onClick={() => { Connect({ country: country, city: city }) }}>
                     <LocationCityIcon sx={{ mr: 1 }} />
                     <ListItemText>
                         {city}
@@ -75,7 +75,7 @@ function Dashboard() {
             ) continue;
 
             list.push(
-                <Box>
+                <Box key={i}>
                     <Divider sx={{ opacity: countries.drawer_open[i] ? 1 : 0 }} />
                     <ListItemButton onClick={() => { Connect({ country: countries.names[i], city: null }) }}>
                         <Box sx={{ mr: 1 }}><span className={"fi fi-" + country_converter(countries.names[i])}></span></Box>
