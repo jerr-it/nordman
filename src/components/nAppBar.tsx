@@ -1,12 +1,12 @@
-import { AppBar, Drawer, IconButton, MenuItem, Toolbar, Typography } from "@mui/material";
-import MenuIcon from '@mui/icons-material/Menu';
+import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
 import ThemeSwitchButton from "./themeSwitchButton";
 import { Box } from "@mui/system";
 import { useState } from "react";
 import SettingsIcon from '@mui/icons-material/Settings';
+import { useNavigate } from "react-router-dom";
 
 function NAppBar() {
-    const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
 
     return (
         <Box>
@@ -17,7 +17,7 @@ function NAppBar() {
                     </Typography>
 
                     <ThemeSwitchButton />
-                    <IconButton color="inherit">
+                    <IconButton color="inherit" onClick={() => { navigate("/settings"); }}>
                         <SettingsIcon />
                     </IconButton>
                 </Toolbar>
