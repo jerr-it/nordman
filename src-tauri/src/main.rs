@@ -67,25 +67,30 @@ fn nordvpn_cities(country: String) -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
-fn nordvpn_connect(
-    country: String,
-    city: Option<String>,
-    state: tauri::State<Mutex<ConnectionState>>,
-) -> Result<ConnectionState, String> {
-    match city {
+fn nordvpn_connect(country: String, city: Option<String>) -> Result<bool, String> {
+    let output = match city {
         Some(city) => cmd!("nordvpn", "connect", country, city,)?,
         None => cmd!("nordvpn", "connect", country,)?,
     };
 
+    let output_str = String::from_utf8(output.stdout).map_err(|e| e.to_string())?;
+
+    Ok(output_str.contains("You are connected to"))
+}
+
+#[tauri::command]
+fn nordvpn_connection_status(
+    state: tauri::State<Mutex<ConnectionState>>,
+) -> Result<ConnectionState, String> {
     let output = cmd!("nordvpn", "status",)?;
 
-    let details = ConnectionDetails::parse(output)?;
+    let new_state = ConnectionState::parse(output)?;
 
     let mut conn = state.lock().unwrap();
 
-    conn.connect(details);
+    *conn = new_state.clone();
 
-    Ok(conn.clone())
+    Ok(new_state)
 }
 
 #[tauri::command]
@@ -99,14 +104,15 @@ fn nordvpn_logout() -> Result<bool, String> {
 
 fn main() {
     tauri::Builder::default()
-        .manage(Mutex::new(model::ConnectionState::new()))
+        .manage(Mutex::new(ConnectionState::new()))
         .invoke_handler(tauri::generate_handler![
             nordvpn_login,
             nordvpn_logout,
             nordvpn_is_logged_in,
             nordvpn_countries,
             nordvpn_cities,
-            nordvpn_connect
+            nordvpn_connect,
+            nordvpn_connection_status,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

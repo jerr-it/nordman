@@ -5,94 +5,105 @@ use serde::Serialize;
 #[derive(Serialize, Clone)]
 pub struct ConnectionState {
     connected: bool,
-    con_details: Option<ConnectionDetails>,
+    conn_details: Option<ConnectionDetails>,
+}
+
+fn parse_input_to_table(input: String) -> HashMap<String, String> {
+    let mut table = HashMap::new();
+
+    let mut lines = input.split("\n");
+    lines.next();
+
+    for line in lines {
+        if line == "" {
+            continue;
+        }
+
+        let mut split = line.split(": ");
+
+        let key = split.next().unwrap().replace("-", " ").trim().to_string();
+        let value = split.next().unwrap().to_string();
+
+        table.insert(key, value);
+    }
+
+    table
 }
 
 impl ConnectionState {
     pub fn new() -> Self {
         Self {
             connected: false,
-            con_details: None,
+            conn_details: None,
         }
     }
 
-    pub fn is_connected(&self) -> bool {
-        self.connected
-    }
+    pub fn parse(output: std::process::Output) -> Result<Self, String> {
+        let output = String::from_utf8(output.stdout).map_err(|e| e.to_string())?;
 
-    pub fn connect(&mut self, details: ConnectionDetails) {
-        self.connected = true;
-        self.con_details = Some(details);
-    }
+        let table = parse_input_to_table(output);
+        println!("{:?}", table);
 
-    pub fn disconnect(&mut self) {
-        self.connected = false;
-        self.con_details = None;
+        let connected = table.get("Status").ok_or("Status not found")? == "Connected";
+
+        let conn_details = if connected {
+            Some(ConnectionDetails::from_table(table)?)
+        } else {
+            None
+        };
+
+        Ok(Self {
+            connected,
+            conn_details,
+        })
     }
 }
 
-macro_rules! table_struct {
-    (
-        $(#[$struct_meta:meta])*
-        $v:vis struct $name:ident {
-            $(
-                $field:ident: String,
-            )*
-        }
-    ) => {
-        $(#[$struct_meta])*
-        $v struct $name {
-            $(
-                $field: String,
-            )*
-        }
-
-        impl $name {
-            fn parse_input_string(input: &str) -> HashMap<String, String> {
-                let mut table = HashMap::new();
-
-                let lines = input.split("\n");
-
-                for line in lines {
-                    let mut line = line.split(": ");
-                    let key = line.next().unwrap().to_string();
-                    let value = line.next().unwrap().to_string();
-
-                    table.insert(key, value);
-                }
-
-                table
-            }
-
-            pub fn parse(output: std::process::Output) -> Result<Self, String> {
-                let output = String::from_utf8_lossy(&output.stdout).to_string();
-                let table = Self::parse_input_string(&output);
-                if table.get("Status").unwrap() == "Disconnected" {
-                    return Err("Not connected".to_string());
-                }
-
-                Ok(Self {
-                    $(
-                        $field: table.get(stringify!($field)).unwrap().to_string(),
-                    )*
-                })
-            }
-        }
-    };
+#[derive(Serialize, Clone)]
+pub struct ConnectionDetails {
+    hostname: String,
+    ip: String,
+    country: String,
+    city: String,
+    current_technology: String,
+    current_protocol: String,
+    transfer: String,
+    uptime: String,
 }
 
-// TODO?: more appropriate name for macro
-table_struct!(
-    #[derive(Serialize, Clone)]
-    pub struct ConnectionDetails {
-        hostname: String,
-        ip: String,
-        country: String,
-        city: String,
-        technology: String,
-        protocol: String,
-        received_bytes: String,
-        sent_bytes: String,
-        uptime: String,
+impl ConnectionDetails {
+    pub fn from_table(table: HashMap<String, String>) -> Result<Self, String> {
+        let hostname = table.get("Hostname").ok_or("No hostname")?.to_string();
+
+        let ip = table.get("IP").ok_or("No IP")?.to_string();
+
+        let country = table.get("Country").ok_or("No country")?.to_string();
+
+        let city = table.get("City").ok_or("No city")?.to_string();
+
+        let current_technology = table
+            .get("Current technology")
+            .ok_or("No current technology")?
+            .to_string();
+
+        let current_protocol = table
+            .get("Current protocol")
+            .ok_or("No current protocol")?
+            .to_string();
+
+        let transfer = table.get("Transfer").ok_or("No transfer")?.to_string();
+
+        let uptime = table.get("Uptime").ok_or("No uptime")?.to_string();
+
+        Ok(Self {
+            hostname,
+            ip,
+            country,
+            city,
+            current_technology,
+            current_protocol,
+            transfer,
+            uptime,
+        })
     }
-);
+}

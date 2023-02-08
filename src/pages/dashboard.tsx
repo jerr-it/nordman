@@ -1,17 +1,19 @@
-import { Card, Collapse, Divider, IconButton, List, ListItem, ListItemText, TextField, Typography } from "@mui/material";
+import { Card, Collapse, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import NAppBar from "../components/nAppBar";
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import LoginIcon from '@mui/icons-material/Login';
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 import { country_converter } from "../assets/country_converter";
 import StatusCard from "../components/statusCard";
+import LocationCityIcon from '@mui/icons-material/LocationCity';
+import { ConnectionState } from "../assets/connection_state";
 
 function Dashboard() {
     const [countries, setCountries] = useState<{ names: string[]; cities: string[][]; drawer_open: boolean[] }>({ names: [], cities: [], drawer_open: [] });
     const [search, setSearch] = useState("");
+    const [connectionStatus, setConnectionStatus] = useState<ConnectionState>();
 
     /// Updates the state of the drawer for the country at index
     /// In accordance with https://beta.reactjs.org/learn/updating-arrays-in-state
@@ -25,21 +27,35 @@ function Dashboard() {
         setCountries({ names: countries.names, cities: countries.cities, drawer_open: new_drawer_open });
     }
 
+    async function Connect(data: { country: string; city: string | null }) {
+        invoke("nordvpn_connect", data)
+            .then((res) => {
+                invoke("nordvpn_connection_status").then((res) => {
+                    const status = res as ConnectionState;
+                    setConnectionStatus(status);
+                }).catch((err) => {
+                    // TODO display error to user
+                    console.error(err);
+                });
+            }).catch((err) => {
+                // TODO display error to user
+                console.error(err);
+            });
+    }
+
     /// Returns the JSX for a list of cities
     /// List of cities as returned from nordvpn_cities
-    function CityList(cities: string[]): Array<JSX.Element> {
+    function CityList(country: string, cities: string[]): Array<JSX.Element> {
         let list = [];
 
         for (let city of cities) {
             list.push(
-                <ListItem sx={{ pl: 4 }}>
+                <ListItemButton sx={{ pl: 4 }} onClick={() => { Connect({ country: country, city: city }) }}>
+                    <LocationCityIcon sx={{ mr: 1 }} />
                     <ListItemText>
                         {city}
                     </ListItemText>
-                    <IconButton>
-                        <LoginIcon />
-                    </IconButton>
-                </ListItem>
+                </ListItemButton >
             );
         }
 
@@ -61,20 +77,17 @@ function Dashboard() {
             list.push(
                 <Box>
                     <Divider sx={{ opacity: countries.drawer_open[i] ? 1 : 0 }} />
-                    <ListItem>
+                    <ListItemButton onClick={() => { Connect({ country: countries.names[i], city: null }) }}>
                         <Box sx={{ mr: 1 }}><span className={"fi fi-" + country_converter(countries.names[i])}></span></Box>
                         <ListItemText>
                             {countries.names[i].replaceAll("_", " ")}
                         </ListItemText>
-                        <IconButton>
-                            <LoginIcon />
-                        </IconButton>
-                        <IconButton onClick={() => { FlipDrawer(i) }}>
+                        <IconButton onClick={(e) => { FlipDrawer(i); e.stopPropagation(); }} onMouseDown={(e) => { e.stopPropagation() }}>
                             {countries.drawer_open[i] ? <ExpandLess /> : <ExpandMore />}
                         </IconButton>
-                    </ListItem>
+                    </ListItemButton>
                     <Collapse in={countries.drawer_open[i]} timeout="auto" unmountOnExit>
-                        {CityList(countries.cities[i])}
+                        {CityList(countries.names[i], countries.cities[i])}
                     </Collapse>
                     <Divider sx={{ opacity: countries.drawer_open[i] ? 1 : 0 }} />
                 </Box>
