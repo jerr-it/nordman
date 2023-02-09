@@ -6,7 +6,7 @@
 mod model;
 use std::process::Command;
 
-use model::{ConnectionDetails, Settings};
+use model::{Account, CitiesList, ConnectionDetails, CountryList, Settings};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
@@ -41,7 +41,7 @@ async fn nordvpn_login() -> Result<String, String> {
 async fn nordvpn_is_logged_in() -> Result<bool, String> {
     let output = cmd!("nordvpn", "account",)?;
 
-    match model::Account::parse(output) {
+    match Account::parse(output) {
         Ok(_) => Ok(true),
         Err(_) => Ok(false),
     }
@@ -51,7 +51,7 @@ async fn nordvpn_is_logged_in() -> Result<bool, String> {
 async fn nordvpn_countries() -> Result<Vec<String>, String> {
     let output = cmd!("nordvpn", "countries",)?;
 
-    let countries = model::CountryList::parse(output);
+    let countries = CountryList::parse(output);
 
     Ok(countries.list)
 }
@@ -60,7 +60,7 @@ async fn nordvpn_countries() -> Result<Vec<String>, String> {
 async fn nordvpn_cities(country: String) -> Result<Vec<String>, String> {
     let output = cmd!("nordvpn", "cities", country,)?;
 
-    let cities = model::CitiesList::parse(output);
+    let cities = CitiesList::parse(output);
 
     Ok(cities.list)
 }
