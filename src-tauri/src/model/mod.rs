@@ -13,6 +13,7 @@ mod connection;
 pub use connection::ConnectionDetails;
 
 mod settings;
+pub use settings::Settings;
 
 fn parse_terminal_output(input: String) -> HashMap<String, String> {
     let mut table = HashMap::new();

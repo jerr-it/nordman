@@ -3,7 +3,7 @@ use serde::Serialize;
 use super::parse_terminal_output;
 
 #[derive(Clone, Serialize)]
-struct Settings {
+pub struct Settings {
     threat_protection_lite: bool,
     firewall: bool,
     kill_switch: bool,
@@ -28,13 +28,13 @@ impl Settings {
             firewall: table["Firewall"] == "enabled",
             kill_switch: table["Kill Switch"] == "enabled",
             ipv6: table["IPv6"] == "enabled",
-            custom_dns: if table["Custom DNS"] == "disabled" {
+            custom_dns: if table["DNS"] == "disabled" {
                 None
             } else {
                 Some(table["DNS"].to_string())
             },
 
-            auto_connect: table["Auto-connect"] == "enabled",
+            auto_connect: table["Auto connect"] == "enabled",
             meshnet: table["Meshnet"] == "enabled",
             notify: table["Notify"] == "enabled",
 

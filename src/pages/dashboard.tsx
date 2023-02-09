@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
-import { country_converter } from "../assets/country_converter";
+import { country_converter } from "../model/country_converter";
 import StatusCard from "../components/statusCard";
 import LocationCityIcon from '@mui/icons-material/LocationCity';
-import { ConnectionDetails } from "../assets/connection_state";
+import { ConnectionDetails } from "../model/connection_state";
 
 function Dashboard() {
     const [countries, setCountries] = useState<{ names: string[]; cities: string[][]; drawer_open: boolean[] }>({ names: [], cities: [], drawer_open: [] });

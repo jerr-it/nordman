@@ -1,5 +1,5 @@
 
-import Settings from "./pages/settings";
+import SettingsPage from "./pages/settings";
 import { ThemeProvider, createTheme } from "@mui/material";
 import CssBaseline from '@mui/material/CssBaseline';
 import React from "react";
@@ -15,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </BrowserRouter>
   );

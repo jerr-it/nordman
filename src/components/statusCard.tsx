@@ -1,8 +1,8 @@
 import { Box, ButtonBase, Card, Collapse, Divider, IconButton, ListItemText, Snackbar, Stack, Typography } from "@mui/material";
-import { country_converter } from "../assets/country_converter";
+import { country_converter } from "../model/country_converter";
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useState } from "react";
-import { ConnectionDetails } from "../assets/connection_state";
+import { ConnectionDetails } from "../model/connection_state";
 
 function StatusCard({ connection, onDisconnect }: { connection: ConnectionDetails | null, onDisconnect: () => void }) {
     const [collapsed, setCollapsed] = useState(false);

@@ -6,7 +6,7 @@
 mod model;
 use std::process::Command;
 
-use model::ConnectionDetails;
+use model::{ConnectionDetails, Settings};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
@@ -104,6 +104,15 @@ async fn nordvpn_logout() -> Result<bool, String> {
         .contains("You are logged out."))
 }
 
+#[tauri::command]
+async fn nordvpn_settings() -> Result<Settings, String> {
+    let output = cmd!("nordvpn", "settings",)?;
+
+    let settings = Settings::parse(output)?;
+
+    Ok(settings)
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -115,6 +124,7 @@ fn main() {
             nordvpn_connect,
             nordvpn_disconnect,
             nordvpn_connection_status,
+            nordvpn_settings,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

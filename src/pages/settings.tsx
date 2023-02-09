@@ -7,9 +7,23 @@ import CheckIcon from '@mui/icons-material/Check';
 import RestoreIcon from '@mui/icons-material/Restore';
 import { useNavigate } from "react-router-dom";
 import { Box, Stack } from "@mui/system";
+import { useEffect, useState } from "react";
+import { Settings } from "../model/settings";
+import { invoke } from "@tauri-apps/api";
 
-function Settings() {
+function SettingsPage() {
     const navigate = useNavigate();
+
+    const [settings, setSettings] = useState<Settings>(new Settings());
+
+    useEffect(() => {
+        invoke("nordvpn_settings").then((settings) => {
+            console.log(settings);
+            setSettings(settings as Settings);
+        }).catch((err: any) => {
+            console.error(err);
+        });
+    }, []);
 
     return (
         <Box>
@@ -48,15 +62,32 @@ function Settings() {
                     <Stack direction="row" spacing={2} sx={{ m: 2, flexGrow: 1 }}>
                         <FormGroup>
                             <FormLabel>Security</FormLabel>
-                            <FormControlLabel control={<Switch />} label="Threat Protection Lite" />
-                            <FormControlLabel control={<Switch />} label="Firewall" />
-                            <FormControlLabel control={<Switch />} label="Kill Switch" />
-                            <FormControlLabel control={<Switch />} label="IPv6" />
+
+                            <FormControlLabel control={<Switch checked={settings?.threat_protection_lite} onChange={(e) => {
+                                setSettings({ ...settings, threat_protection_lite: e.target.checked } as Settings);
+                            }} />} label="Threat Protection Lite" />
+
+                            <FormControlLabel control={<Switch checked={settings?.firewall} onChange={(e) => {
+                                setSettings({ ...settings, firewall: e.target.checked } as Settings);
+                            }} />} label="Firewall" />
+
+                            <FormControlLabel control={<Switch checked={settings?.kill_switch} onChange={(e) => {
+                                setSettings({ ...settings, kill_switch: e.target.checked } as Settings);
+                            }} />} label="Kill Switch" />
+
+                            <FormControlLabel control={<Switch checked={settings?.ipv6} onChange={(e) => {
+                                setSettings({ ...settings, ipv6: e.target.checked } as Settings);
+                            }} />} label="IPv6" />
+
                             <FormControlLabel
                                 control={
                                     <Stack direction="row" justifyContent="center" alignItems="center">
-                                        <Switch sx={{ mt: 2 }} />
-                                        <TextField variant="standard" label="Custom DNS" />
+                                        <Switch sx={{ mt: 2 }} checked={settings?.custom_dns != null} onChange={(e) => {
+                                            setSettings({ ...settings, custom_dns: e.target.checked ? "" : null } as Settings);
+                                        }} />
+                                        <TextField variant="standard" label="Custom DNS" value={settings?.custom_dns ?? ""} disabled={settings?.custom_dns == null} onChange={(e) => {
+                                            setSettings({ ...settings, custom_dns: e.target.value } as Settings);
+                                        }} />
                                     </Stack>
                                 }
                                 label=""
@@ -64,13 +95,21 @@ function Settings() {
                         </FormGroup>
                         <FormGroup>
                             <FormLabel>Features</FormLabel>
-                            <FormControlLabel control={<Switch />} label="Autoconnect" />
-                            <FormControlLabel control={<Switch />} label="Meshnet" />
-                            <FormControlLabel control={<Switch />} label="Notify" />
+                            <FormControlLabel control={<Switch checked={settings?.auto_connect} onChange={(e) => {
+                                setSettings({ ...settings, auto_connect: e.target.checked } as Settings);
+                            }} />} label="Autoconnect" />
+                            <FormControlLabel control={<Switch checked={settings?.meshnet} onChange={(e) => {
+                                setSettings({ ...settings, meshnet: e.target.checked } as Settings);
+                            }} />} label="Meshnet" />
+                            <FormControlLabel control={<Switch checked={settings?.notify} onChange={(e) => {
+                                setSettings({ ...settings, notify: e.target.checked } as Settings);
+                            }} />} label="Notify" />
                         </FormGroup>
                         <FormGroup>
                             <FormLabel>Misc</FormLabel>
-                            <FormControlLabel control={<Switch />} label="Analytics" />
+                            <FormControlLabel control={<Switch checked={settings?.analytics} onChange={(e) => {
+                                setSettings({ ...settings, analytics: e.target.checked } as Settings);
+                            }} />} label="Analytics" />
                         </FormGroup>
                     </Stack>
                     <Stack direction="row" spacing={2}>
@@ -87,4 +126,4 @@ function Settings() {
     );
 }
 
-export default Settings;
+export default SettingsPage;
