@@ -1,28 +1,6 @@
-use std::collections::HashMap;
-
 use serde::Serialize;
 
-fn parse_input_to_table(input: String) -> HashMap<String, String> {
-    let mut table = HashMap::new();
-
-    let mut lines = input.split("\n");
-    lines.next();
-
-    for line in lines {
-        if line == "" {
-            continue;
-        }
-
-        let mut split = line.split(": ");
-
-        let key = split.next().unwrap().replace("-", " ").trim().to_string();
-        let value = split.next().unwrap().to_string();
-
-        table.insert(key, value);
-    }
-
-    table
-}
+use super::parse_terminal_output;
 
 #[derive(Serialize, Clone)]
 pub struct ConnectionDetails {
@@ -38,7 +16,7 @@ pub struct ConnectionDetails {
 
 impl ConnectionDetails {
     pub fn parse(output: std::process::Output) -> Result<Self, String> {
-        let table = parse_input_to_table(String::from_utf8_lossy(&output.stdout).to_string());
+        let table = parse_terminal_output(String::from_utf8_lossy(&output.stdout).to_string());
 
         let hostname = table.get("Hostname").ok_or("No hostname")?.to_string();
 
