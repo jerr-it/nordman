@@ -113,6 +113,15 @@ async fn nordvpn_settings() -> Result<Settings, String> {
     Ok(settings)
 }
 
+#[tauri::command]
+async fn nordvpn_settings_default() -> Result<bool, String> {
+    let output = cmd!("nordvpn", "set", "defaults",)?;
+
+    let output_str = String::from_utf8_lossy(&output.stdout).to_string();
+
+    Ok(output_str.contains("Settings were successfully restored to defaults."))
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -125,6 +134,7 @@ fn main() {
             nordvpn_disconnect,
             nordvpn_connection_status,
             nordvpn_settings,
+            nordvpn_settings_default,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

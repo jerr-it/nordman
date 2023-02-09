@@ -18,7 +18,6 @@ function SettingsPage() {
 
     useEffect(() => {
         invoke("nordvpn_settings").then((settings) => {
-            console.log(settings);
             setSettings(settings as Settings);
         }).catch((err: any) => {
             console.error(err);
@@ -78,7 +77,18 @@ function SettingsPage() {
                             <FormControlLabel control={<Switch checked={settings?.ipv6} onChange={(e) => {
                                 setSettings({ ...settings, ipv6: e.target.checked } as Settings);
                             }} />} label="IPv6" />
-
+                        </FormGroup>
+                        <FormGroup>
+                            <FormLabel>Features</FormLabel>
+                            <FormControlLabel control={<Switch checked={settings?.auto_connect} onChange={(e) => {
+                                setSettings({ ...settings, auto_connect: e.target.checked } as Settings);
+                            }} />} label="Autoconnect" />
+                            <FormControlLabel control={<Switch checked={settings?.meshnet} onChange={(e) => {
+                                setSettings({ ...settings, meshnet: e.target.checked } as Settings);
+                            }} />} label="Meshnet" />
+                            <FormControlLabel control={<Switch checked={settings?.notify} onChange={(e) => {
+                                setSettings({ ...settings, notify: e.target.checked } as Settings);
+                            }} />} label="Notify" />
                             <FormControlLabel
                                 control={
                                     <Stack direction="row" justifyContent="center" alignItems="center">
@@ -92,18 +102,6 @@ function SettingsPage() {
                                 }
                                 label=""
                             />
-                        </FormGroup>
-                        <FormGroup>
-                            <FormLabel>Features</FormLabel>
-                            <FormControlLabel control={<Switch checked={settings?.auto_connect} onChange={(e) => {
-                                setSettings({ ...settings, auto_connect: e.target.checked } as Settings);
-                            }} />} label="Autoconnect" />
-                            <FormControlLabel control={<Switch checked={settings?.meshnet} onChange={(e) => {
-                                setSettings({ ...settings, meshnet: e.target.checked } as Settings);
-                            }} />} label="Meshnet" />
-                            <FormControlLabel control={<Switch checked={settings?.notify} onChange={(e) => {
-                                setSettings({ ...settings, notify: e.target.checked } as Settings);
-                            }} />} label="Notify" />
                         </FormGroup>
                         <FormGroup>
                             <FormLabel>Misc</FormLabel>
