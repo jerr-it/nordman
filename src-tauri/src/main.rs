@@ -4,9 +4,9 @@
 )]
 
 mod model;
-use std::process::Command;
+use std::{collections::HashMap, process::Command};
 
-use model::{Account, CitiesList, ConnectionDetails, CountryList, Settings};
+use model::{Account, ConnectionDetails, Locations, Settings};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
@@ -48,21 +48,20 @@ async fn nordvpn_is_logged_in() -> Result<bool, String> {
 }
 
 #[tauri::command]
-async fn nordvpn_countries() -> Result<Vec<String>, String> {
+async fn nordvpn_locations() -> Result<HashMap<String, Vec<String>>, String> {
     let output = cmd!("nordvpn", "countries",)?;
+    let countries = Locations::parse_countries(output);
 
-    let countries = CountryList::parse(output);
+    let mut locations = Locations::default();
 
-    Ok(countries.list)
-}
+    for country in countries.iter() {
+        let output = cmd!("nordvpn", "cities", country,)?;
+        let cities = Locations::parse_cities(output);
 
-#[tauri::command]
-async fn nordvpn_cities(country: String) -> Result<Vec<String>, String> {
-    let output = cmd!("nordvpn", "cities", country,)?;
+        locations.add(country.to_string(), cities);
+    }
 
-    let cities = CitiesList::parse(output);
-
-    Ok(cities.list)
+    Ok(locations.list)
 }
 
 #[tauri::command]
@@ -148,8 +147,7 @@ fn main() {
             nordvpn_login,
             nordvpn_logout,
             nordvpn_is_logged_in,
-            nordvpn_countries,
-            nordvpn_cities,
+            nordvpn_locations,
             nordvpn_connect,
             nordvpn_disconnect,
             nordvpn_connection_status,

@@ -1,10 +1,4 @@
-mod country_list;
 use std::collections::HashMap;
-
-pub use country_list::CountryList;
-
-mod cities_list;
-pub use cities_list::CitiesList;
 
 mod account;
 pub use account::Account;
@@ -14,6 +8,9 @@ pub use connection::ConnectionDetails;
 
 mod settings;
 pub use settings::Settings;
+
+mod locations;
+pub use locations::Locations;
 
 fn parse_terminal_output(input: String) -> HashMap<String, String> {
     let mut table = HashMap::new();

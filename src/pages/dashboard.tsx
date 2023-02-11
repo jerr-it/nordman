@@ -12,20 +12,26 @@ import { ConnectionDetails } from "../model/connection_state";
 import { useSnackbar } from 'notistack';
 
 function Dashboard() {
-    const [countries, setCountries] = useState<{ names: string[]; cities: string[][]; drawer_open: boolean[] }>({ names: [], cities: [], drawer_open: [] });
+    const [countries, setCountries] = useState<{ [country: string]: { cities: Array<string>; drawer_open: boolean } }>({});
     const [search, setSearch] = useState("");
     const [connectionStatus, setConnectionStatus] = useState<ConnectionDetails | null>(null);
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     useEffect(() => {
-        invoke<Array<string>>("nordvpn_countries").then(async (res) => {
-            let cities = [];
-            for (let country of res) {
-                const new_cities = await invoke<Array<string>>("nordvpn_cities", { country: country });
-                cities.push(new_cities);
+        invoke<{ [country: string]: Array<string> }>("nordvpn_locations").then(async (res) => {
+            const countries = res as { [country: string]: Array<string> };
+
+            const country_names = Object.keys(countries);
+            const country_cities = Object.values(countries);
+            const country_drawers = country_names.map(() => false);
+
+            // Construct dictionary of countries and their cities plus drawer state
+            const country_dict: { [country: string]: { cities: Array<string>; drawer_open: boolean } } = {};
+            for (let i = 0; i < country_names.length; i++) {
+                country_dict[country_names[i]] = { cities: country_cities[i], drawer_open: country_drawers[i] };
             }
-            setCountries({ names: res, cities: cities, drawer_open: Array(res.length).fill(false) });
+            setCountries(country_dict);
         }).catch((err) => {
             DisplayError(err);
         });
@@ -72,14 +78,10 @@ function Dashboard() {
 
     /// Updates the state of the drawer for the country at index
     /// In accordance with https://beta.reactjs.org/learn/updating-arrays-in-state
-    function FlipDrawer(index: number): void {
-        const new_drawer_open = countries.drawer_open.map((value, i) => {
-            if (i === index) {
-                return !value;
-            }
-            return value;
-        });
-        setCountries({ names: countries.names, cities: countries.cities, drawer_open: new_drawer_open });
+    function FlipDrawer(country: string): void {
+        const new_countries = { ...countries };
+        new_countries[country].drawer_open = !new_countries[country].drawer_open;
+        setCountries(new_countries);
     }
 
     function DisplayError(err: string) {
@@ -112,32 +114,32 @@ function Dashboard() {
 
     /// Returns the JSX for a list of countries
     /// List of countries as returned from nordvpn_countries
-    function CountryList(countries: { names: string[]; cities: string[][]; drawer_open: boolean[] }): Array<JSX.Element> {
+    function CountryList(): Array<JSX.Element> {
         let list = [];
 
         const searchTerm = search.toLowerCase();
 
-        for (let i = 0; i < countries.names.length; i++) {
-            if (!countries.names[i].toLowerCase().includes(searchTerm) &&
-                !countries.cities[i].some((city) => city.toLowerCase().includes(searchTerm))
+        for (const [country, { cities, drawer_open }] of Object.entries(countries)) {
+            if (!country.toLowerCase().includes(searchTerm) &&
+                !cities.some((city) => city.toLowerCase().includes(searchTerm))
             ) continue;
 
             list.push(
-                <Box key={i}>
-                    <Divider sx={{ opacity: countries.drawer_open[i] ? 1 : 0 }} />
-                    <ListItemButton onClick={() => { Connect({ country: countries.names[i], city: null }) }}>
-                        <Box sx={{ mr: 1 }}><span className={"fi fi-" + country_converter(countries.names[i])}></span></Box>
+                <Box key={country}>
+                    <Divider sx={{ opacity: drawer_open ? 1 : 0 }} />
+                    <ListItemButton onClick={() => { Connect({ country: country, city: null }) }}>
+                        <Box sx={{ mr: 1 }}><span className={"fi fi-" + country_converter(country)}></span></Box>
                         <ListItemText>
-                            {countries.names[i].replaceAll("_", " ")}
+                            {country.replaceAll("_", " ")}
                         </ListItemText>
-                        <IconButton onClick={(e) => { FlipDrawer(i); e.stopPropagation(); }} onMouseDown={(e) => { e.stopPropagation() }}>
-                            {countries.drawer_open[i] ? <ExpandLess /> : <ExpandMore />}
+                        <IconButton onClick={(e) => { FlipDrawer(country); e.stopPropagation(); }} onMouseDown={(e) => { e.stopPropagation() }}>
+                            {drawer_open ? <ExpandLess /> : <ExpandMore />}
                         </IconButton>
                     </ListItemButton>
-                    <Collapse in={countries.drawer_open[i]} timeout="auto" unmountOnExit>
-                        {CityList(countries.names[i], countries.cities[i])}
+                    <Collapse in={drawer_open} timeout="auto" unmountOnExit>
+                        {CityList(country, cities)}
                     </Collapse>
-                    <Divider sx={{ opacity: countries.drawer_open[i] ? 1 : 0 }} />
+                    <Divider sx={{ opacity: drawer_open ? 1 : 0 }} />
                 </Box>
             );
         }
@@ -160,7 +162,7 @@ function Dashboard() {
                             component="nav"
                             aria-labelledby="nested-list-subheader"
                         >
-                            {CountryList(countries)}
+                            {CountryList()}
                         </List>
                     </Card>
                 </Stack>
