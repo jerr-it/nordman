@@ -5,10 +5,13 @@ pub struct CountryList {
 impl CountryList {
     pub fn parse(output: std::process::Output) -> Self {
         let output = String::from_utf8_lossy(&output.stdout);
-        let countries = output
-            .split("\n")
-            .nth(1)
-            .unwrap()
+
+        let countries_list = output
+            .lines()
+            .filter(|line| !line.contains("New feature"))
+            .collect::<Vec<&str>>();
+
+        let countries = countries_list[0]
             .split(",")
             .map(|name| name.replace("-", " ").trim().to_string())
             .collect::<Vec<String>>();

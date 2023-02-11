@@ -122,6 +122,25 @@ async fn nordvpn_settings_default() -> Result<bool, String> {
     Ok(output_str.contains("Settings were successfully restored to defaults."))
 }
 
+#[tauri::command]
+async fn nordvpn_settings_apply(new: Settings) -> Result<bool, String> {
+    let current = nordvpn_settings().await?;
+
+    check_and_apply!(new, current, threat_protection_lite, "threatprotectionlite");
+    check_and_apply!(new, current, firewall, "firewall");
+    check_and_apply!(new, current, kill_switch, "killswitch");
+    check_and_apply!(new, current, ipv6, "ipv6");
+    check_and_apply!(new, current, custom_dns, "dns", Option);
+
+    check_and_apply!(new, current, auto_connect, "autoconnect");
+    check_and_apply!(new, current, meshnet, "meshnet");
+    check_and_apply!(new, current, notify, "notify");
+
+    check_and_apply!(new, current, analytics, "analytics");
+
+    Ok(true)
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -135,6 +154,7 @@ fn main() {
             nordvpn_connection_status,
             nordvpn_settings,
             nordvpn_settings_default,
+            nordvpn_settings_apply,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

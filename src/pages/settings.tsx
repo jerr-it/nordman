@@ -24,6 +24,15 @@ function SettingsPage() {
         });
     }, []);
 
+    function ApplySettings() {
+        invoke("nordvpn_settings_apply", { new: settings }).then((ok) => {
+            console.log(ok);
+            // TODO display feedback
+        }).catch((err: any) => {
+            console.error(err);
+        });
+    }
+
     return (
         <Box>
             <AppBar position="static">
@@ -114,7 +123,7 @@ function SettingsPage() {
                         <Button variant="contained" startIcon={<RestoreIcon />}>
                             Defaults
                         </Button>
-                        <Button variant="contained" startIcon={<CheckIcon />}>
+                        <Button variant="contained" startIcon={<CheckIcon />} onClick={ApplySettings}>
                             Apply
                         </Button>
                     </Stack>

@@ -18,8 +18,10 @@ pub use settings::Settings;
 fn parse_terminal_output(input: String) -> HashMap<String, String> {
     let mut table = HashMap::new();
 
-    let mut lines = input.split("\n");
-    lines.next();
+    let lines = input
+        .split("\n")
+        .filter(|line| !line.contains("New feature"))
+        .collect::<Vec<&str>>();
 
     for line in lines {
         if line == "" {
