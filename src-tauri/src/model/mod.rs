@@ -9,8 +9,7 @@ pub use connection::ConnectionDetails;
 mod settings;
 pub use settings::Settings;
 
-mod locations;
-pub use locations::Locations;
+pub mod locations;
 
 fn parse_terminal_output(input: String) -> HashMap<String, String> {
     let mut table = HashMap::new();
