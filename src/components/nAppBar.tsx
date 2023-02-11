@@ -1,5 +1,4 @@
 import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
-import ThemeSwitchButton from "./themeSwitchButton";
 import { Box } from "@mui/system";
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useNavigate } from "react-router-dom";
@@ -15,7 +14,6 @@ function NAppBar() {
                         Nordman
                     </Typography>
 
-                    <ThemeSwitchButton />
                     <IconButton color="inherit" onClick={() => { navigate("/settings"); }}>
                         <SettingsIcon />
                     </IconButton>

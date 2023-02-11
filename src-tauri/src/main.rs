@@ -143,6 +143,7 @@ async fn nordvpn_settings_apply(new: Settings) -> Result<bool, String> {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_store::Builder::default().build())
         .invoke_handler(tauri::generate_handler![
             nordvpn_login,
             nordvpn_logout,

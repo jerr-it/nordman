@@ -11,4 +11,5 @@ export class Settings {
     notify: boolean = false;
 
     analytics: boolean = false;
+    dark_mode: boolean = false;
 }

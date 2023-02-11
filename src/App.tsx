@@ -8,7 +8,7 @@ import Dashboard from "./pages/dashboard";
 import LoginPage from "./pages/login";
 import { SnackbarProvider } from 'notistack';
 
-export const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
+export const ColorModeContext = React.createContext({ toggleColorMode: () => { }, setColorMode: (mode: boolean) => { } });
 
 function App() {
   return (
@@ -29,6 +29,9 @@ export default function ToggleColorMode() {
       toggleColorMode: () => {
         setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
       },
+      setColorMode: (mode: boolean) => {
+        setMode(mode ? 'dark' : 'light');
+      }
     }),
     [],
   );

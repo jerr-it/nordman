@@ -6,13 +6,20 @@ import { open } from "@tauri-apps/api/shell";
 import { useEffect, useState } from "react";
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
-import ThemeSwitchButton from "../components/themeSwitchButton";
+import { Store } from "tauri-plugin-store-api";
+import { ColorModeContext } from "../App";
+import { useContext } from "react";
+import { useTheme } from "@mui/material";
 
 function LoginPage() {
     const [state, setState] = useState<{ waiting: boolean, login_url: string }>({ waiting: false, login_url: "" });
+    const store = new Store(".settings.dat");
 
     const navigate = useNavigate();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+    const theme = useTheme();
+    const colorMode = useContext(ColorModeContext);
 
     async function StartLogin() {
         try {
@@ -40,6 +47,12 @@ function LoginPage() {
 
     // Initial check
     useEffect(() => {
+        store.get<boolean>("dark_mode").then((dark_mode) => {
+            colorMode.setColorMode(dark_mode ?? false);
+        }).catch((err: any) => {
+            DisplayError(err);
+        });
+
         check_login().then((status) => {
             if (status) {
                 navigate("/dashboard");
@@ -101,7 +114,6 @@ function LoginPage() {
                     }
                 </Stack>
             </Card>
-            <ThemeSwitchButton />
         </Grid>
     );
 }

@@ -1,6 +1,5 @@
 import { AppBar, Button, Card, Divider, FormControlLabel, FormGroup, FormLabel, IconButton, ListItemText, Switch, TextField, Toolbar, Typography } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ThemeSwitchButton from "../components/themeSwitchButton";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CheckIcon from '@mui/icons-material/Check';
@@ -11,23 +10,38 @@ import { useEffect, useState } from "react";
 import { Settings } from "../model/settings";
 import { invoke } from "@tauri-apps/api";
 import { useSnackbar } from 'notistack';
+import { Store } from "tauri-plugin-store-api";
+import { ColorModeContext } from "../App";
+import { useContext } from "react";
+import { useTheme } from "@mui/material";
 
 function SettingsPage() {
     const navigate = useNavigate();
 
     const [settings, setSettings] = useState<Settings>(new Settings());
+    const store = new Store(".settings.dat");
+
+    const theme = useTheme();
+    const colorMode = useContext(ColorModeContext);
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     useEffect(() => {
-        invoke("nordvpn_settings").then((settings) => {
-            setSettings(settings as Settings);
+        invoke("nordvpn_settings").then(async (settings) => {
+            const full_settings = settings as Settings;
+
+            full_settings.dark_mode = await store.get("dark_mode") ?? false;
+
+            setSettings(full_settings);
         }).catch((err: any) => {
             DisplayError(err);
         });
     }, []);
 
-    function ApplySettings() {
+    async function ApplySettings() {
+        await store.set("dark_mode", settings.dark_mode);
+        colorMode.setColorMode(settings.dark_mode);
+
         invoke("nordvpn_settings_apply", { new: settings }).then((ok) => {
             enqueueSnackbar("Settings applied", {
                 variant: "success",
@@ -59,8 +73,6 @@ function SettingsPage() {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Settings
                     </Typography>
-
-                    <ThemeSwitchButton />
                 </Toolbar>
             </AppBar>
             <Card sx={{ width: "98vw", height: "85vh", m: 1, p: 1 }}>
@@ -133,6 +145,9 @@ function SettingsPage() {
                             <FormControlLabel control={<Switch checked={settings?.analytics} onChange={(e) => {
                                 setSettings({ ...settings, analytics: e.target.checked } as Settings);
                             }} />} label="Analytics" />
+                            <FormControlLabel control={<Switch checked={settings?.dark_mode} onChange={(e) => {
+                                setSettings({ ...settings, dark_mode: e.target.checked } as Settings);
+                            }} />} label="Dark Mode" />
                         </FormGroup>
                     </Stack>
                     <Stack direction="row" spacing={2}>
