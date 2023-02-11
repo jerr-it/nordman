@@ -4,7 +4,7 @@
 )]
 
 mod model;
-use std::{collections::HashMap, process::Command};
+use std::{collections::HashMap, process::Command, sync::Mutex};
 
 use model::{Account, ConnectionDetails, Settings};
 
@@ -48,7 +48,15 @@ async fn nordvpn_is_logged_in() -> Result<bool, String> {
 }
 
 #[tauri::command]
-async fn nordvpn_locations() -> Result<HashMap<String, Vec<String>>, String> {
+async fn nordvpn_locations(
+    location_state: tauri::State<'_, Mutex<Option<HashMap<String, Vec<String>>>>>,
+) -> Result<HashMap<String, Vec<String>>, String> {
+    let mut location_state = location_state.lock().unwrap();
+
+    if let Some(locations) = &*location_state {
+        return Ok(locations.clone());
+    }
+
     let output = cmd!("nordvpn", "countries",)?;
     let countries = model::parse_list(String::from_utf8_lossy(&output.stdout).to_string());
 
@@ -60,6 +68,8 @@ async fn nordvpn_locations() -> Result<HashMap<String, Vec<String>>, String> {
 
         locations.insert(country.to_string(), cities);
     }
+
+    *location_state = Some(locations.clone());
 
     Ok(locations)
 }
@@ -143,6 +153,7 @@ async fn nordvpn_settings_apply(new: Settings) -> Result<bool, String> {
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
+        .manage(Mutex::new(None::<HashMap<String, Vec<String>>>))
         .invoke_handler(tauri::generate_handler![
             nordvpn_login,
             nordvpn_logout,
