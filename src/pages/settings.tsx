@@ -10,26 +10,42 @@ import { Box, Stack } from "@mui/system";
 import { useEffect, useState } from "react";
 import { Settings } from "../model/settings";
 import { invoke } from "@tauri-apps/api";
+import { useSnackbar } from 'notistack';
 
 function SettingsPage() {
     const navigate = useNavigate();
 
     const [settings, setSettings] = useState<Settings>(new Settings());
 
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
     useEffect(() => {
         invoke("nordvpn_settings").then((settings) => {
             setSettings(settings as Settings);
         }).catch((err: any) => {
-            console.error(err);
+            DisplayError(err);
         });
     }, []);
 
     function ApplySettings() {
         invoke("nordvpn_settings_apply", { new: settings }).then((ok) => {
-            console.log(ok);
-            // TODO display feedback
+            enqueueSnackbar("Settings applied", {
+                variant: "success",
+                anchorOrigin: { vertical: "bottom", horizontal: "right" },
+                autoHideDuration: 3000,
+                disableWindowBlurListener: true,
+            });
         }).catch((err: any) => {
-            console.error(err);
+            DisplayError(err);
+        });
+    }
+
+    function DisplayError(err: string) {
+        enqueueSnackbar(err, {
+            variant: "error",
+            anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            autoHideDuration: 3000,
+            disableWindowBlurListener: true,
         });
     }
 

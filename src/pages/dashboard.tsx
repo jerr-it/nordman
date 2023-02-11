@@ -9,11 +9,14 @@ import { country_converter } from "../model/country_converter";
 import StatusCard from "../components/statusCard";
 import LocationCityIcon from '@mui/icons-material/LocationCity';
 import { ConnectionDetails } from "../model/connection_state";
+import { useSnackbar } from 'notistack';
 
 function Dashboard() {
     const [countries, setCountries] = useState<{ names: string[]; cities: string[][]; drawer_open: boolean[] }>({ names: [], cities: [], drawer_open: [] });
     const [search, setSearch] = useState("");
     const [connectionStatus, setConnectionStatus] = useState<ConnectionDetails | null>(null);
+
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     useEffect(() => {
         invoke<Array<string>>("nordvpn_countries").then(async (res) => {
@@ -24,8 +27,7 @@ function Dashboard() {
             }
             setCountries({ names: res, cities: cities, drawer_open: Array(res.length).fill(false) });
         }).catch((err) => {
-            // TODO display error to user
-            console.log(err);
+            DisplayError(err);
         });
     }, []);
 
@@ -37,7 +39,7 @@ function Dashboard() {
                 const status = res as ConnectionDetails;
                 setConnectionStatus(status);
             }).catch((err) => {
-                console.error(err);
+                DisplayError(err);
             });
         }, 5000);
 
@@ -52,12 +54,10 @@ function Dashboard() {
                     const status = res as ConnectionDetails;
                     setConnectionStatus(status);
                 }).catch((err) => {
-                    // TODO display error to user
-                    console.error(err);
+                    DisplayError(err);
                 });
             }).catch((err) => {
-                // TODO display error to user
-                console.error(err);
+                DisplayError(err);
             });
     }
 
@@ -66,8 +66,7 @@ function Dashboard() {
             .then((res) => {
                 setConnectionStatus(null);
             }).catch((err) => {
-                // TODO display error to user
-                console.error(err);
+                DisplayError(err);
             });
     }
 
@@ -81,6 +80,15 @@ function Dashboard() {
             return value;
         });
         setCountries({ names: countries.names, cities: countries.cities, drawer_open: new_drawer_open });
+    }
+
+    function DisplayError(err: string) {
+        enqueueSnackbar(err, {
+            variant: "error",
+            anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            autoHideDuration: 3000,
+            disableWindowBlurListener: true,
+        });
     }
 
     /// Returns the JSX for a list of cities

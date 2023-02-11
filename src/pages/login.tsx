@@ -4,7 +4,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import { invoke } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/shell";
 import { useEffect, useState } from "react";
-
+import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import ThemeSwitchButton from "../components/themeSwitchButton";
 
@@ -12,6 +12,7 @@ function LoginPage() {
     const [state, setState] = useState<{ waiting: boolean, login_url: string }>({ waiting: false, login_url: "" });
 
     const navigate = useNavigate();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     async function StartLogin() {
         try {
@@ -23,7 +24,7 @@ function LoginPage() {
                 await open(state.login_url);
             }
         } catch (e) {
-            console.error(e);
+            DisplayError(e as string);
         }
     }
 
@@ -31,7 +32,7 @@ function LoginPage() {
         try {
             return await invoke("nordvpn_is_logged_in", {});
         } catch (e) {
-            console.error(e);
+            DisplayError(e as string);
         }
 
         return false;
@@ -45,6 +46,15 @@ function LoginPage() {
             }
         });
     }, []);
+
+    function DisplayError(err: string) {
+        enqueueSnackbar(err, {
+            variant: "error",
+            anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            autoHideDuration: 3000,
+            disableWindowBlurListener: true,
+        });
+    }
 
     // Check every 3 seconds after pressing login
     useEffect(() => {

@@ -6,6 +6,7 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/dashboard";
 import LoginPage from "./pages/login";
+import { SnackbarProvider } from 'notistack';
 
 export const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
 
@@ -46,7 +47,9 @@ export default function ToggleColorMode() {
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <App />
+        <SnackbarProvider maxSnack={3}>
+          <App />
+        </SnackbarProvider>
       </ThemeProvider>
     </ColorModeContext.Provider>
   );
