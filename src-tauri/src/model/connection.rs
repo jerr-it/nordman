@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use super::parse_terminal_output;
+use super::parse_table;
 
 #[derive(Serialize, Clone)]
 pub struct ConnectionDetails {
@@ -16,7 +16,7 @@ pub struct ConnectionDetails {
 
 impl ConnectionDetails {
     pub fn parse(output: std::process::Output) -> Result<Self, String> {
-        let table = parse_terminal_output(String::from_utf8_lossy(&output.stdout).to_string());
+        let table = parse_table(String::from_utf8_lossy(&output.stdout).to_string());
 
         let hostname = table.get("Hostname").ok_or("No hostname")?.to_string();
 

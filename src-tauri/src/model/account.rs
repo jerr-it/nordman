@@ -1,4 +1,4 @@
-use super::parse_terminal_output;
+use super::parse_table;
 
 pub struct Account {
     pub email: String,
@@ -13,7 +13,7 @@ impl Account {
             return Err("Not logged in".to_string());
         }
 
-        let table = parse_terminal_output(output.to_string());
+        let table = parse_table(output.to_string());
 
         Ok(Self {
             email: table["Email Address"].to_string(),

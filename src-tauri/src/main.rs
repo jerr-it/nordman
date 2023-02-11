@@ -6,7 +6,7 @@
 mod model;
 use std::{collections::HashMap, process::Command};
 
-use model::{locations, Account, ConnectionDetails, Settings};
+use model::{Account, ConnectionDetails, Settings};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
@@ -50,13 +50,13 @@ async fn nordvpn_is_logged_in() -> Result<bool, String> {
 #[tauri::command]
 async fn nordvpn_locations() -> Result<HashMap<String, Vec<String>>, String> {
     let output = cmd!("nordvpn", "countries",)?;
-    let countries = locations::parse_countries(output);
+    let countries = model::parse_list(String::from_utf8_lossy(&output.stdout).to_string());
 
     let mut locations = HashMap::new();
 
     for country in countries.iter() {
         let output = cmd!("nordvpn", "cities", country,)?;
-        let cities = locations::parse_cities(output);
+        let cities = model::parse_list(String::from_utf8_lossy(&output.stdout).to_string());
 
         locations.insert(country.to_string(), cities);
     }

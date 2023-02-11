@@ -9,9 +9,8 @@ pub use connection::ConnectionDetails;
 mod settings;
 pub use settings::Settings;
 
-pub mod locations;
-
-fn parse_terminal_output(input: String) -> HashMap<String, String> {
+/// Method for parsing terminal output formatted as a table
+pub fn parse_table(input: String) -> HashMap<String, String> {
     let mut table = HashMap::new();
 
     let lines = input
@@ -38,4 +37,19 @@ fn parse_terminal_output(input: String) -> HashMap<String, String> {
     }
 
     table
+}
+
+/// Method for parsing terminal output formatted as a comma-separated list
+pub fn parse_list(input: String) -> Vec<String> {
+    let lines = input
+        .split("\n")
+        .filter(|line| !line.contains("New feature"))
+        .collect::<Vec<&str>>();
+
+    let list = lines[0]
+        .split(",")
+        .map(|name| name.replace("-", " ").trim().to_string())
+        .collect::<Vec<String>>();
+
+    list
 }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::parse_terminal_output;
+use super::parse_table;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub struct Settings {
@@ -21,7 +21,7 @@ impl Settings {
     pub fn parse(output: std::process::Output) -> Result<Self, String> {
         let output_str = String::from_utf8(output.stdout).map_err(|e| e.to_string())?;
 
-        let table = parse_terminal_output(output_str);
+        let table = parse_table(output_str);
 
         let settings = Self {
             threat_protection_lite: table["Threat Protection Lite"] == "enabled",
