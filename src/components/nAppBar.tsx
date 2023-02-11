@@ -1,7 +1,6 @@
 import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
 import ThemeSwitchButton from "./themeSwitchButton";
 import { Box } from "@mui/system";
-import { useState } from "react";
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useNavigate } from "react-router-dom";
 

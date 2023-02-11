@@ -5,6 +5,7 @@ import { IconButton, useTheme } from "@mui/material";
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import Brightness3Icon from '@mui/icons-material/Brightness3';
 
+// TODO Remove button and move dark mode setting to settings page
 function ThemeSwitchButton() {
     const theme = useTheme();
     const colorMode = useContext(ColorModeContext);

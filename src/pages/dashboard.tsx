@@ -1,4 +1,4 @@
-import { Card, Collapse, Divider, IconButton, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from "@mui/material";
+import { Card, Collapse, Divider, IconButton, List, ListItemButton, ListItemText, TextField, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import NAppBar from "../components/nAppBar";
 import { useEffect, useState } from "react";
@@ -15,17 +15,19 @@ function Dashboard() {
     const [search, setSearch] = useState("");
     const [connectionStatus, setConnectionStatus] = useState<ConnectionDetails | null>(null);
 
-    /// Updates the state of the drawer for the country at index
-    /// In accordance with https://beta.reactjs.org/learn/updating-arrays-in-state
-    function FlipDrawer(index: number): void {
-        const new_drawer_open = countries.drawer_open.map((value, i) => {
-            if (i === index) {
-                return !value;
+    useEffect(() => {
+        invoke<Array<string>>("nordvpn_countries").then(async (res) => {
+            let cities = [];
+            for (let country of res) {
+                const new_cities = await invoke<Array<string>>("nordvpn_cities", { country: country });
+                cities.push(new_cities);
             }
-            return value;
+            setCountries({ names: res, cities: cities, drawer_open: Array(res.length).fill(false) });
+        }).catch((err) => {
+            // TODO display error to user
+            console.log(err);
         });
-        setCountries({ names: countries.names, cities: countries.cities, drawer_open: new_drawer_open });
-    }
+    }, []);
 
     function Connect(data: { country: string; city: string | null }) {
         const fixed_data = { country: data.country.replaceAll(" ", "_"), city: data.city?.replaceAll(" ", "_") };
@@ -52,6 +54,18 @@ function Dashboard() {
                 // TODO display error to user
                 console.error(err);
             });
+    }
+
+    /// Updates the state of the drawer for the country at index
+    /// In accordance with https://beta.reactjs.org/learn/updating-arrays-in-state
+    function FlipDrawer(index: number): void {
+        const new_drawer_open = countries.drawer_open.map((value, i) => {
+            if (i === index) {
+                return !value;
+            }
+            return value;
+        });
+        setCountries({ names: countries.names, cities: countries.cities, drawer_open: new_drawer_open });
     }
 
     /// Returns the JSX for a list of cities
@@ -107,20 +121,6 @@ function Dashboard() {
 
         return list;
     }
-
-    useEffect(() => {
-        invoke<Array<string>>("nordvpn_countries").then(async (res) => {
-            let cities = [];
-            for (let country of res) {
-                const new_cities = await invoke<Array<string>>("nordvpn_cities", { country: country });
-                cities.push(new_cities);
-            }
-            setCountries({ names: res, cities: cities, drawer_open: Array(res.length).fill(false) });
-        }).catch((err) => {
-            // TODO display error to user
-            console.log(err);
-        });
-    }, []);
 
     return (
         <Box>
