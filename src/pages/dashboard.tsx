@@ -29,6 +29,21 @@ function Dashboard() {
         });
     }, []);
 
+    useEffect(() => {
+        if (connectionStatus === null) return;
+
+        const interval = setInterval(() => {
+            invoke("nordvpn_connection_status").then((res) => {
+                const status = res as ConnectionDetails;
+                setConnectionStatus(status);
+            }).catch((err) => {
+                console.error(err);
+            });
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [connectionStatus]);
+
     function Connect(data: { country: string; city: string | null }) {
         const fixed_data = { country: data.country.replaceAll(" ", "_"), city: data.city?.replaceAll(" ", "_") };
         invoke("nordvpn_connect", fixed_data)
