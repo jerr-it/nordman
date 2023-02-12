@@ -103,7 +103,7 @@ function Dashboard() {
                 <ListItemButton key={country + city} sx={{ pl: 4 }} onClick={() => { Connect({ country: country, city: city }) }}>
                     <LocationCityIcon sx={{ mr: 1 }} />
                     <ListItemText>
-                        {city}
+                        {city.replaceAll("_", " ")}
                     </ListItemText>
                 </ListItemButton >
             );
