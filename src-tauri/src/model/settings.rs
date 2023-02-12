@@ -47,32 +47,43 @@ impl Settings {
 
 #[macro_export]
 macro_rules! apply_setting {
-    ($new:ident, $field:ident) => {
-        let setting = if $new.$field { "enabled" } else { "disabled" };
-        let output = cmd!("nordvpn", "set", stringify!($field), setting,)?;
+    ($new:ident, $old:ident, $field:ident) => {
+        if $new.$field != $old.$field {
+            println!("{}: {} -> {}", stringify!($field), $old.$field, $new.$field);
+            let setting = if $new.$field { "enabled" } else { "disabled" };
+            let output = cmd!("nordvpn", "set", stringify!($field), setting,)?;
 
-        let out_str = String::from_utf8_lossy(&output.stdout).to_string();
-        let result = out_str.contains("successfully") || out_str.contains("already");
+            let out_str = String::from_utf8_lossy(&output.stdout).to_string();
+            let result = out_str.contains("successfully") || out_str.contains("already");
 
-        if !result {
-            println!("{}", out_str);
-            return Ok(false);
+            if !result {
+                println!("{}", out_str);
+                return Ok(false);
+            }
         }
     };
 
-    ($new:ident, $field:ident, Option) => {
-        let setting = match $new.$field {
-            Some(value) => value,
-            None => "disabled".to_string(),
-        };
-        let output = cmd!("nordvpn", "set", stringify!($field), setting,)?;
+    ($new:ident, $old:ident, $field:ident, Option) => {
+        if $new.$field != $old.$field {
+            println!(
+                "{}: {:?} -> {:?}",
+                stringify!($field),
+                $old.$field,
+                $new.$field
+            );
+            let setting = match $new.$field {
+                Some(value) => value,
+                None => "disabled".to_string(),
+            };
+            let output = cmd!("nordvpn", "set", stringify!($field), setting,)?;
 
-        let out_str = String::from_utf8_lossy(&output.stdout).to_string();
-        let result = out_str.contains("successfully") || out_str.contains("already");
+            let out_str = String::from_utf8_lossy(&output.stdout).to_string();
+            let result = out_str.contains("successfully") || out_str.contains("already");
 
-        if !result {
-            println!("{}", out_str);
-            return Ok(false);
+            if !result {
+                println!("{}", out_str);
+                return Ok(false);
+            }
         }
     };
 }
