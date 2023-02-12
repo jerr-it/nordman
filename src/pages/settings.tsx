@@ -43,6 +43,11 @@ function SettingsPage() {
         colorMode.setColorMode(settings.dark_mode);
 
         invoke("nordvpn_settings_apply", { new: settings }).then((ok) => {
+            if (!ok) {
+                DisplayError("Failed to apply settings");
+                return;
+            }
+
             enqueueSnackbar("Settings applied", {
                 variant: "success",
                 anchorOrigin: { vertical: "bottom", horizontal: "right" },
@@ -99,16 +104,16 @@ function SettingsPage() {
                         <FormGroup>
                             <FormLabel>Security</FormLabel>
 
-                            <FormControlLabel control={<Switch checked={settings?.threat_protection_lite} onChange={(e) => {
-                                setSettings({ ...settings, threat_protection_lite: e.target.checked } as Settings);
+                            <FormControlLabel control={<Switch checked={settings?.threatprotectionlite} onChange={(e) => {
+                                setSettings({ ...settings, threatprotectionlite: e.target.checked } as Settings);
                             }} />} label="Threat Protection Lite" />
 
                             <FormControlLabel control={<Switch checked={settings?.firewall} onChange={(e) => {
                                 setSettings({ ...settings, firewall: e.target.checked } as Settings);
                             }} />} label="Firewall" />
 
-                            <FormControlLabel control={<Switch checked={settings?.kill_switch} onChange={(e) => {
-                                setSettings({ ...settings, kill_switch: e.target.checked } as Settings);
+                            <FormControlLabel control={<Switch checked={settings?.killswitch} onChange={(e) => {
+                                setSettings({ ...settings, killswitch: e.target.checked } as Settings);
                             }} />} label="Kill Switch" />
 
                             <FormControlLabel control={<Switch checked={settings?.ipv6} onChange={(e) => {
@@ -117,8 +122,8 @@ function SettingsPage() {
                         </FormGroup>
                         <FormGroup>
                             <FormLabel>Features</FormLabel>
-                            <FormControlLabel control={<Switch checked={settings?.auto_connect} onChange={(e) => {
-                                setSettings({ ...settings, auto_connect: e.target.checked } as Settings);
+                            <FormControlLabel control={<Switch checked={settings?.autoconnect} onChange={(e) => {
+                                setSettings({ ...settings, autoconnect: e.target.checked } as Settings);
                             }} />} label="Autoconnect" />
                             <FormControlLabel control={<Switch checked={settings?.meshnet} onChange={(e) => {
                                 setSettings({ ...settings, meshnet: e.target.checked } as Settings);
@@ -129,11 +134,11 @@ function SettingsPage() {
                             <FormControlLabel
                                 control={
                                     <Stack direction="row" justifyContent="center" alignItems="center">
-                                        <Switch sx={{ mt: 2 }} checked={settings?.custom_dns != null} onChange={(e) => {
-                                            setSettings({ ...settings, custom_dns: e.target.checked ? "" : null } as Settings);
+                                        <Switch sx={{ mt: 2 }} checked={settings?.dns != null} onChange={(e) => {
+                                            setSettings({ ...settings, dns: e.target.checked ? "" : null } as Settings);
                                         }} />
-                                        <TextField variant="standard" label="Custom DNS" value={settings?.custom_dns ?? ""} disabled={settings?.custom_dns == null} onChange={(e) => {
-                                            setSettings({ ...settings, custom_dns: e.target.value } as Settings);
+                                        <TextField variant="standard" label="Custom DNS" value={settings?.dns ?? ""} disabled={settings?.dns == null} onChange={(e) => {
+                                            setSettings({ ...settings, dns: e.target.value } as Settings);
                                         }} />
                                     </Stack>
                                 }

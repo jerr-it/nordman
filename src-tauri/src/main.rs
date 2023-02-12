@@ -133,19 +133,17 @@ async fn nordvpn_settings_default() -> Result<bool, String> {
 
 #[tauri::command]
 async fn nordvpn_settings_apply(new: Settings) -> Result<bool, String> {
-    let current = nordvpn_settings().await?;
+    apply_setting!(new, threatprotectionlite);
+    apply_setting!(new, firewall);
+    apply_setting!(new, killswitch);
+    apply_setting!(new, ipv6);
+    apply_setting!(new, dns, Option);
 
-    check_and_apply!(new, current, threat_protection_lite, "threatprotectionlite");
-    check_and_apply!(new, current, firewall, "firewall");
-    check_and_apply!(new, current, kill_switch, "killswitch");
-    check_and_apply!(new, current, ipv6, "ipv6");
-    check_and_apply!(new, current, custom_dns, "dns", Option);
+    apply_setting!(new, autoconnect);
+    apply_setting!(new, meshnet);
+    apply_setting!(new, notify);
 
-    check_and_apply!(new, current, auto_connect, "autoconnect");
-    check_and_apply!(new, current, meshnet, "meshnet");
-    check_and_apply!(new, current, notify, "notify");
-
-    check_and_apply!(new, current, analytics, "analytics");
+    apply_setting!(new, analytics);
 
     Ok(true)
 }
