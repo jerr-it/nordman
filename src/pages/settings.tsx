@@ -72,6 +72,15 @@ function SettingsPage() {
         });
     }
 
+    function DisplayInfo(info: string) {
+        enqueueSnackbar(info, {
+            variant: "info",
+            anchorOrigin: { vertical: "bottom", horizontal: "right" },
+            autoHideDuration: 3000,
+            disableWindowBlurListener: true,
+        });
+    }
+
     return (
         <Box>
             <AppBar position="static">
@@ -113,10 +122,20 @@ function SettingsPage() {
                             }} />} label="Threat Protection Lite" />
 
                             <FormControlLabel control={<Switch checked={settings?.firewall} onChange={(e) => {
+                                if (!e.target.checked && settings?.killswitch) {
+                                    setSettings({ ...settings, firewall: e.target.checked, killswitch: false } as Settings);
+                                    DisplayInfo("Kill Switch requires Firewall to be enabled");
+                                    return;
+                                }
                                 setSettings({ ...settings, firewall: e.target.checked } as Settings);
                             }} />} label="Firewall" />
 
                             <FormControlLabel control={<Switch checked={settings?.killswitch} onChange={(e) => {
+                                if (e.target.checked && !settings?.firewall) {
+                                    setSettings({ ...settings, killswitch: e.target.checked, firewall: true } as Settings);
+                                    DisplayInfo("Kill Switch requires Firewall to be enabled");
+                                    return;
+                                }
                                 setSettings({ ...settings, killswitch: e.target.checked } as Settings);
                             }} />} label="Kill Switch" />
 
