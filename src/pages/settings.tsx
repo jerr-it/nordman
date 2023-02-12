@@ -59,6 +59,10 @@ function SettingsPage() {
         });
     }
 
+    function LoadDefaultSettings() {
+        setSettings(new Settings());
+    }
+
     function DisplayError(err: string) {
         enqueueSnackbar(err, {
             variant: "error",
@@ -156,7 +160,7 @@ function SettingsPage() {
                         </FormGroup>
                     </Stack>
                     <Stack direction="row" spacing={2}>
-                        <Button variant="contained" startIcon={<RestoreIcon />}>
+                        <Button variant="contained" startIcon={<RestoreIcon />} onClick={LoadDefaultSettings}>
                             Defaults
                         </Button>
                         <Button variant="contained" startIcon={<CheckIcon />} onClick={ApplySettings}>

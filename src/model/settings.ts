@@ -1,7 +1,7 @@
 
 export class Settings {
     threatprotectionlite: boolean = false;
-    firewall: boolean = false;
+    firewall: boolean = true;
     killswitch: boolean = false;
     ipv6: boolean = false;
     dns: string | null = null;
@@ -10,6 +10,6 @@ export class Settings {
     meshnet: boolean = false;
     notify: boolean = false;
 
-    analytics: boolean = false;
+    analytics: boolean = true;
     dark_mode: boolean = false;
 }
