@@ -8,11 +8,13 @@ pub struct Settings {
     pub firewall: bool,
     pub killswitch: bool,
     pub ipv6: bool,
-    pub dns: Option<String>,
+    pub technology: String,
 
     pub autoconnect: bool,
+    pub routing: bool,
     pub meshnet: bool,
     pub notify: bool,
+    pub dns: Option<String>,
 
     pub analytics: bool,
 }
@@ -28,15 +30,17 @@ impl Settings {
             firewall: table["Firewall"] == "enabled",
             killswitch: table["Kill Switch"] == "enabled",
             ipv6: table["IPv6"] == "enabled",
+            technology: table["Technology"].clone(),
+
+            autoconnect: table["Auto connect"] == "enabled",
+            routing: table["Routing"] == "enabled",
+            meshnet: table["Meshnet"] == "enabled",
+            notify: table["Notify"] == "enabled",
             dns: if table["DNS"] == "disabled" {
                 None
             } else {
                 Some(table["DNS"].to_string())
             },
-
-            autoconnect: table["Auto connect"] == "enabled",
-            meshnet: table["Meshnet"] == "enabled",
-            notify: table["Notify"] == "enabled",
 
             analytics: table["Analytics"] == "enabled",
         };
@@ -49,7 +53,6 @@ impl Settings {
 macro_rules! apply_setting {
     ($new:ident, $old:ident, $field:ident) => {
         if $new.$field != $old.$field {
-            println!("{}: {} -> {}", stringify!($field), $old.$field, $new.$field);
             let setting = if $new.$field { "enabled" } else { "disabled" };
             let output = cmd!("nordvpn", "set", stringify!($field), setting,)?;
 
@@ -65,17 +68,25 @@ macro_rules! apply_setting {
 
     ($new:ident, $old:ident, $field:ident, Option) => {
         if $new.$field != $old.$field {
-            println!(
-                "{}: {:?} -> {:?}",
-                stringify!($field),
-                $old.$field,
-                $new.$field
-            );
             let setting = match $new.$field {
                 Some(value) => value,
                 None => "disabled".to_string(),
             };
             let output = cmd!("nordvpn", "set", stringify!($field), setting,)?;
+
+            let out_str = String::from_utf8_lossy(&output.stdout).to_string();
+            let result = out_str.contains("successfully") || out_str.contains("already");
+
+            if !result {
+                println!("{}", out_str);
+                return Ok(false);
+            }
+        }
+    };
+
+    ($new:ident, $old:ident, $field:ident, String) => {
+        if $new.$field != $old.$field {
+            let output = cmd!("nordvpn", "set", stringify!($field), $new.$field,)?;
 
             let out_str = String::from_utf8_lossy(&output.stdout).to_string();
             let result = out_str.contains("successfully") || out_str.contains("already");

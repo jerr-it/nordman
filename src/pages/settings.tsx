@@ -1,4 +1,4 @@
-import { AppBar, Button, Card, Divider, FormControlLabel, FormGroup, FormLabel, IconButton, ListItemText, Switch, TextField, Toolbar, Typography } from "@mui/material";
+import { AppBar, Button, Card, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, InputLabel, ListItemText, MenuItem, Select, Switch, TextField, Toolbar, Typography } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -7,7 +7,7 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import { useNavigate } from "react-router-dom";
 import { Box, Stack } from "@mui/system";
 import { useEffect, useState } from "react";
-import { Settings } from "../model/settings";
+import { Settings, technologies } from "../model/settings";
 import { invoke } from "@tauri-apps/api";
 import { useSnackbar } from 'notistack';
 import { Store } from "tauri-plugin-store-api";
@@ -142,12 +142,31 @@ function SettingsPage() {
                             <FormControlLabel control={<Switch checked={settings?.ipv6} onChange={(e) => {
                                 setSettings({ ...settings, ipv6: e.target.checked } as Settings);
                             }} />} label="IPv6" />
+
+                            <FormControl sx={{ mt: 0.5, mr: 2 }} variant="standard">
+                                <InputLabel>Technology</InputLabel>
+                                <Select
+                                    value={settings?.technology}
+                                    label="Technology"
+                                    onChange={(e) => {
+                                        setSettings({ ...settings, technology: e.target.value as string } as Settings);
+                                    }}
+                                >
+                                    {technologies.map((tech) => {
+                                        return <MenuItem value={tech}>{tech}</MenuItem>;
+                                    })}
+
+                                </Select>
+                            </FormControl>
                         </FormGroup>
                         <FormGroup>
                             <FormLabel>Features</FormLabel>
                             <FormControlLabel control={<Switch checked={settings?.autoconnect} onChange={(e) => {
                                 setSettings({ ...settings, autoconnect: e.target.checked } as Settings);
                             }} />} label="Autoconnect" />
+                            <FormControlLabel control={<Switch checked={settings?.routing} onChange={(e) => {
+                                setSettings({ ...settings, routing: e.target.checked } as Settings);
+                            }} />} label="Routing" />
                             <FormControlLabel control={<Switch checked={settings?.meshnet} onChange={(e) => {
                                 setSettings({ ...settings, meshnet: e.target.checked } as Settings);
                             }} />} label="Meshnet" />

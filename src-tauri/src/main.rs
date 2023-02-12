@@ -139,11 +139,13 @@ async fn nordvpn_settings_apply(new: Settings) -> Result<bool, String> {
     apply_setting!(new, old, firewall);
     apply_setting!(new, old, killswitch);
     apply_setting!(new, old, ipv6);
-    apply_setting!(new, old, dns, Option);
+    apply_setting!(new, old, technology, String);
 
     apply_setting!(new, old, autoconnect);
+    apply_setting!(new, old, routing);
     apply_setting!(new, old, meshnet);
     apply_setting!(new, old, notify);
+    apply_setting!(new, old, dns, Option);
 
     apply_setting!(new, old, analytics);
 
