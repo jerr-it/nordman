@@ -2,6 +2,7 @@ import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useNavigate } from "react-router-dom";
+import HubIcon from '@mui/icons-material/Hub';
 
 function NAppBar() {
     const navigate = useNavigate();
@@ -13,6 +14,10 @@ function NAppBar() {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Nordman
                     </Typography>
+
+                    <IconButton color="inherit" onClick={() => { navigate("/meshnet"); }}>
+                        <HubIcon />
+                    </IconButton>
 
                     <IconButton color="inherit" onClick={() => { navigate("/settings"); }}>
                         <SettingsIcon />
