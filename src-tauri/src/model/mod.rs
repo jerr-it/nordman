@@ -16,6 +16,7 @@ pub fn parse_table(input: String) -> HashMap<String, String> {
     let lines = input
         .split("\n")
         .filter(|line| !line.contains("New feature"))
+        .filter(|line| !line.contains("new version"))
         .collect::<Vec<&str>>();
 
     for line in lines {
@@ -44,6 +45,7 @@ pub fn parse_list(input: String) -> Vec<String> {
     let lines = input
         .split("\n")
         .filter(|line| !line.contains("New feature"))
+        .filter(|line| !line.contains("new version"))
         .collect::<Vec<&str>>();
 
     let list = lines[0]
