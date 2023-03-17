@@ -5,6 +5,8 @@ export class Settings {
     killswitch: boolean = false;
     ipv6: boolean = false;
     technology: string = "NORDLYNX";
+    obfuscate: boolean = false;
+    protocol: string = "UDP";
 
     autoconnect: boolean = false;
     routing: boolean = true;
@@ -19,4 +21,9 @@ export class Settings {
 export const technologies = [
     "NORDLYNX",
     "OPENVPN",
+];
+
+export const protocols = [
+    "UDP",
+    "TCP",
 ];

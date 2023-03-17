@@ -7,7 +7,7 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import { useNavigate } from "react-router-dom";
 import { Box, Stack } from "@mui/system";
 import { useEffect, useState } from "react";
-import { Settings, technologies } from "../model/settings";
+import { protocols, Settings, technologies } from "../model/settings";
 import { invoke } from "@tauri-apps/api";
 import { useSnackbar } from 'notistack';
 import { Store } from "tauri-plugin-store-api";
@@ -142,8 +142,7 @@ function SettingsPage() {
                             <FormControlLabel control={<Switch checked={settings?.ipv6} onChange={(e) => {
                                 setSettings({ ...settings, ipv6: e.target.checked } as Settings);
                             }} />} label="IPv6" />
-
-                            <FormControl sx={{ mt: 0.5, mr: 2 }} variant="standard">
+                            <FormControl sx={{ mt: 2 }} variant="standard">
                                 <InputLabel>Technology</InputLabel>
                                 <Select
                                     value={settings?.technology}
@@ -155,7 +154,23 @@ function SettingsPage() {
                                     {technologies.map((tech) => {
                                         return <MenuItem value={tech}>{tech}</MenuItem>;
                                     })}
-
+                                </Select>
+                            </FormControl>
+                            <FormControlLabel sx={{ mt: 2 }} disabled={settings?.technology == "NORDLYNX"} control={<Switch checked={settings?.obfuscate} onChange={(e) => {
+                                setSettings({ ...settings, obfuscate: e.target.checked } as Settings);
+                            }} />} label="Obfuscate" />
+                            <FormControl disabled={settings?.technology == "NORDLYNX"} sx={{ mt: 1 }} variant="standard">
+                                <InputLabel>Protocol</InputLabel>
+                                <Select
+                                    value={settings?.protocol}
+                                    label="Protocol"
+                                    onChange={(e) => {
+                                        setSettings({ ...settings, protocol: e.target.value as string } as Settings);
+                                    }}
+                                >
+                                    {protocols.map((protocol) => {
+                                        return <MenuItem value={protocol}>{protocol}</MenuItem>;
+                                    })}
                                 </Select>
                             </FormControl>
                         </FormGroup>
@@ -197,7 +212,7 @@ function SettingsPage() {
                             }} />} label="Dark Mode" />
                         </FormGroup>
                     </Stack>
-                    <Stack direction="row" spacing={2}>
+                    <Stack sx={{ mt: -5 }} direction="row" spacing={2} justifyContent="flex-end">
                         <Button variant="contained" startIcon={<RestoreIcon />} onClick={LoadDefaultSettings}>
                             Defaults
                         </Button>

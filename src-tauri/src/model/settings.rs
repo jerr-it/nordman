@@ -9,6 +9,8 @@ pub struct Settings {
     pub killswitch: bool,
     pub ipv6: bool,
     pub technology: String,
+    pub obfuscate: bool,
+    pub protocol: String,
 
     pub autoconnect: bool,
     pub routing: bool,
@@ -31,6 +33,16 @@ impl Settings {
             killswitch: table["Kill Switch"] == "enabled",
             ipv6: table["IPv6"] == "enabled",
             technology: table["Technology"].clone(),
+            obfuscate: if table.contains_key("Obfuscate") {
+                table["Obfuscate"] == "enabled"
+            } else {
+                false
+            },
+            protocol: if table.contains_key("Protocol") {
+                table["Protocol"].clone()
+            } else {
+                "UDP".to_string()
+            },
 
             autoconnect: table["Auto connect"] == "enabled",
             routing: table["Routing"] == "enabled",
