@@ -7,6 +7,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/dashboard";
 import LoginPage from "./pages/login";
 import { SnackbarProvider } from 'notistack';
+import MeshnetPage from "./pages/meshnet";
 
 export const ColorModeContext = React.createContext({ toggleColorMode: () => { }, setColorMode: (mode: boolean) => { } });
 
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/meshnet" element={<MeshnetPage />} />
       </Routes>
     </BrowserRouter>
   );
