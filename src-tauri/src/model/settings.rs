@@ -66,7 +66,7 @@ macro_rules! apply_setting {
     ($new:ident, $old:ident, $field:ident) => {
         if $new.$field != $old.$field {
             let setting = if $new.$field { "enabled" } else { "disabled" };
-            let output = cmd!("nordvpn", "set", stringify!($field), setting,)?;
+            let output = cli!("nordvpn", "set", stringify!($field), setting,)?;
 
             let out_str = String::from_utf8_lossy(&output.stdout).to_string();
             let result = out_str.contains("successfully") || out_str.contains("already");
@@ -84,7 +84,7 @@ macro_rules! apply_setting {
                 Some(value) => value,
                 None => "disabled".to_string(),
             };
-            let output = cmd!("nordvpn", "set", stringify!($field), setting,)?;
+            let output = cli!("nordvpn", "set", stringify!($field), setting,)?;
 
             let out_str = String::from_utf8_lossy(&output.stdout).to_string();
             let result = out_str.contains("successfully") || out_str.contains("already");
@@ -98,7 +98,7 @@ macro_rules! apply_setting {
 
     ($new:ident, $old:ident, $field:ident, String) => {
         if $new.$field != $old.$field {
-            let output = cmd!("nordvpn", "set", stringify!($field), $new.$field,)?;
+            let output = cli!("nordvpn", "set", stringify!($field), $new.$field,)?;
 
             let out_str = String::from_utf8_lossy(&output.stdout).to_string();
             let result = out_str.contains("successfully") || out_str.contains("already");

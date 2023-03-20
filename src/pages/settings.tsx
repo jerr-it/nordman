@@ -14,11 +14,14 @@ import { Store } from "tauri-plugin-store-api";
 import { ColorModeContext } from "../App";
 import { useContext } from "react";
 import { useTheme } from "@mui/material";
+import { Account } from "../model/account";
 
 function SettingsPage() {
     const navigate = useNavigate();
 
-    const [settings, setSettings] = useState<Settings>(new Settings());
+    const [settings, setSettings] = useState(new Settings());
+    const [account, setAccount] = useState(new Account());
+
     const store = new Store(".settings.dat");
 
     const theme = useTheme();
@@ -33,6 +36,12 @@ function SettingsPage() {
             full_settings.dark_mode = await store.get("dark_mode") ?? false;
 
             setSettings(full_settings);
+        }).catch((err: any) => {
+            DisplayError(err);
+        });
+
+        invoke("nordvpn_account_details").then((details) => {
+            setAccount(details as Account);
         }).catch((err: any) => {
             DisplayError(err);
         });
@@ -98,10 +107,10 @@ function SettingsPage() {
                     <AccountBoxIcon sx={{ width: 100, height: 100, mr: 1 }} />
                     <ListItemText sx={{ flexGrow: 1 }}>
                         <Typography variant="h6">
-                            john.doe@gmail.com
+                            {account?.email}
                         </Typography>
                         <Typography variant="body2">
-                            Active (Expires on Jan 1st, 2030)
+                            {account?.service}
                         </Typography>
                     </ListItemText>
                     <Button

@@ -1,5 +1,8 @@
+use serde::Serialize;
+
 use super::parse_table;
 
+#[derive(Serialize, Clone)]
 pub struct Account {
     pub email: String,
     pub service: String,
