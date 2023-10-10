@@ -35,6 +35,13 @@ function Dashboard() {
         }).catch((err) => {
             DisplayError(err);
         });
+
+        invoke("nordvpn_connection_status").then((res) => {
+            const status = res as ConnectionDetails;
+            setConnectionStatus(status);
+        }).catch((err) => {
+            DisplayError(err);
+        });
     }, []);
 
     useEffect(() => {
