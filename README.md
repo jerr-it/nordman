@@ -1,7 +1,10 @@
-# Tauri + React + Typescript
+# Nordman
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+This is a graphical frontend for the Linux NordVPN client.
 
-## Recommended IDE Setup
+## Gallery
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+![Screenshot](./images/screenshot1.png)
+![Screenshot](./images/screenshot2.png)
+![Screenshot](./images/screenshot3.png)
+![Screenshot](./images/screenshot4.png)
