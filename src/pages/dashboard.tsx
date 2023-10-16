@@ -10,6 +10,7 @@ import StatusCard from "../components/statusCard";
 import LocationCityIcon from '@mui/icons-material/LocationCity';
 import { ConnectionDetails } from "../model/connection_state";
 import { useSnackbar } from 'notistack';
+import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 
 function Dashboard() {
     const [countries, setCountries] = useState<{ [country: string]: { cities: Array<string>; drawer_open: boolean } }>({});
@@ -40,7 +41,7 @@ function Dashboard() {
             const status = res as ConnectionDetails;
             setConnectionStatus(status);
         }).catch((err) => {
-            DisplayError(err);
+            console.log(err);
         });
     }, []);
 
@@ -52,7 +53,7 @@ function Dashboard() {
                 const status = res as ConnectionDetails;
                 setConnectionStatus(status);
             }).catch((err) => {
-                DisplayError(err);
+                console.log(err);
             });
         }, 5000);
 
@@ -174,7 +175,17 @@ function Dashboard() {
                     </Card>
                 </Stack>
                 <Card sx={{ flexGrow: 1, p: 1 }}>
-                    <Typography>Map</Typography>
+                    <ComposableMap style={{width: "100%", height: "100%"}}>
+                        <ZoomableGroup center={[0, 0]} zoom={9}>
+                            <Geographies geography="features.json" style={{fill: "#FFFFFF"}}>
+                                {({ geographies }) =>
+                                    geographies.map((geo) => (
+                                        <Geography key={geo.rsmKey} geography={geo} />
+                                    ))
+                                }
+                            </Geographies>
+                        </ZoomableGroup>
+                    </ComposableMap>
                 </Card>
             </Stack >
             <StatusCard connection={connectionStatus} onDisconnect={Disconnect} />
